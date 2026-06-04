@@ -1,0 +1,770 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>白酒直播电商 Harness：把直播间变成可复盘的经营系统</title>
+  <style>
+    :root {
+      --bg: #050b14;
+      --bg2: #071525;
+      --panel: rgba(12, 27, 48, .86);
+      --panel2: rgba(8, 18, 34, .76);
+      --line: rgba(83, 204, 255, .23);
+      --line2: rgba(255, 255, 255, .08);
+      --text: #f2f8ff;
+      --soft: #d7e8f8;
+      --muted: #9fb3c8;
+      --cyan: #28d8ff;
+      --blue: #4c8dff;
+      --green: #62e6a7;
+      --orange: #ffb454;
+      --red: #ff6b6b;
+      --purple: #aa8cff;
+      --yellow: #ffe27a;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+    }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", Arial, sans-serif;
+      background:
+        linear-gradient(rgba(255,255,255,.032) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.032) 1px, transparent 1px),
+        radial-gradient(circle at 12% 14%, rgba(40, 216, 255, .18), transparent 31%),
+        radial-gradient(circle at 88% 22%, rgba(76, 141, 255, .15), transparent 32%),
+        linear-gradient(145deg, #050b14 0%, #071525 56%, #0a1d31 100%);
+      background-size: 44px 44px, 44px 44px, auto, auto, auto;
+      overflow-x: hidden;
+    }
+
+    .progress {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--cyan), var(--blue));
+      z-index: 20;
+    }
+
+    .nav {
+      position: fixed;
+      right: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 12;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .nav a {
+      width: 8px;
+      height: 8px;
+      display: block;
+      border: 1px solid rgba(40, 216, 255, .7);
+      background: rgba(40, 216, 255, .12);
+    }
+
+    .deck { scroll-snap-type: y mandatory; }
+
+    .slide {
+      min-height: 100vh;
+      padding: 52px 78px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      scroll-snap-align: start;
+    }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: 24px;
+      border: 1px solid var(--line);
+      pointer-events: none;
+    }
+
+    .slide::after {
+      content: attr(data-page);
+      position: absolute;
+      right: 78px;
+      bottom: 38px;
+      color: rgba(215,232,248,.36);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .brand {
+      position: absolute;
+      right: 78px;
+      top: 42px;
+      color: #82a8ff;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: .02em;
+    }
+
+    .brand span { color: var(--orange); }
+
+    .kicker {
+      color: var(--cyan);
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    h1 {
+      max-width: 1120px;
+      font-size: clamp(42px, 5.2vw, 74px);
+      line-height: 1.06;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      max-width: 1120px;
+      font-size: clamp(34px, 4vw, 56px);
+      line-height: 1.14;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      font-size: 22px;
+      line-height: 1.28;
+    }
+
+    .sub {
+      max-width: 980px;
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 21px;
+      line-height: 1.55;
+    }
+
+    .accent { color: var(--cyan); }
+    .green { color: var(--green); }
+    .orange { color: var(--orange); }
+    .red { color: var(--red); }
+    .purple { color: var(--purple); }
+    .yellow { color: var(--yellow); }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+      margin-top: 34px;
+    }
+
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .card {
+      background: linear-gradient(180deg, var(--panel), rgba(7, 18, 34, .84));
+      border: 1px solid var(--line);
+      padding: 22px;
+      min-height: 146px;
+      box-shadow: 0 22px 60px rgba(0,0,0,.24);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--cyan);
+    }
+
+    .card.blue::before { background: var(--blue); }
+    .card.green::before { background: var(--green); }
+    .card.orange::before { background: var(--orange); }
+    .card.red::before { background: var(--red); }
+    .card.purple::before { background: var(--purple); }
+
+    .card h3 {
+      margin-bottom: 12px;
+      color: var(--soft);
+    }
+
+    .card p, .card li {
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    ul { margin: 0; padding-left: 18px; }
+    li { margin: 5px 0; }
+
+    .bigline {
+      margin-top: 30px;
+      max-width: 1120px;
+      font-size: clamp(28px, 3.2vw, 46px);
+      line-height: 1.25;
+      font-weight: 900;
+    }
+
+    .formula {
+      display: grid;
+      grid-template-columns: 1fr 58px 1fr 58px 1fr 58px 1.1fr;
+      align-items: center;
+      gap: 12px;
+      margin-top: 42px;
+    }
+
+    .box {
+      min-height: 142px;
+      border: 1px solid var(--line);
+      background: rgba(12, 27, 48, .78);
+      padding: 22px;
+    }
+
+    .box strong {
+      display: block;
+      color: var(--cyan);
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .box span {
+      display: block;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    .op {
+      color: var(--cyan);
+      text-align: center;
+      font-size: 38px;
+      font-weight: 900;
+    }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 34px;
+    }
+
+    .pipe {
+      min-height: 136px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      background: rgba(12, 27, 48, .78);
+      position: relative;
+    }
+
+    .pipe strong {
+      display: block;
+      font-size: 17px;
+      color: var(--soft);
+      margin-bottom: 8px;
+    }
+
+    .pipe span {
+      display: block;
+      color: var(--muted);
+      font-size: 13.5px;
+      line-height: 1.36;
+    }
+
+    .pipe::after {
+      content: "→";
+      position: absolute;
+      right: -12px;
+      top: 52px;
+      color: var(--cyan);
+      z-index: 2;
+      font-weight: 900;
+    }
+
+    .pipe:last-child::after { content: ""; }
+
+    .matrix {
+      display: grid;
+      grid-template-columns: .85fr 1.1fr 1.4fr 1.25fr;
+      margin-top: 32px;
+      border: 1px solid var(--line);
+      background: rgba(7, 18, 34, .62);
+    }
+
+    .matrix.five { grid-template-columns: .85fr 1.05fr 1.25fr 1.15fr 1.05fr; }
+
+    .matrix div {
+      min-height: 58px;
+      padding: 13px 15px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.42;
+    }
+
+    .matrix div:nth-child(4n) { border-right: 0; }
+    .matrix.five div:nth-child(4n) { border-right: 1px solid var(--line); }
+    .matrix.five div:nth-child(5n) { border-right: 0; }
+
+    .matrix .head {
+      color: var(--cyan);
+      background: rgba(40, 216, 255, .09);
+      font-weight: 900;
+    }
+
+    .matrix .strong {
+      color: var(--soft);
+      font-weight: 800;
+    }
+
+    .swim {
+      margin-top: 32px;
+      border: 1px solid var(--line);
+      background: rgba(7, 18, 34, .62);
+    }
+
+    .lane {
+      display: grid;
+      grid-template-columns: 150px repeat(5, 1fr);
+      border-bottom: 1px solid var(--line2);
+      min-height: 76px;
+    }
+
+    .lane:last-child { border-bottom: 0; }
+
+    .lane .label {
+      padding: 18px;
+      background: rgba(40, 216, 255, .09);
+      color: var(--cyan);
+      font-weight: 900;
+      border-right: 1px solid var(--line);
+    }
+
+    .lane .cell {
+      padding: 15px 12px;
+      border-right: 1px solid var(--line2);
+      color: var(--muted);
+      font-size: 13.5px;
+      line-height: 1.38;
+    }
+
+    .lane .cell:last-child { border-right: 0; }
+
+    .tag {
+      display: inline-flex;
+      border: 1px solid var(--line);
+      background: rgba(40, 216, 255, .08);
+      color: var(--soft);
+      padding: 6px 10px;
+      font-size: 13px;
+      font-weight: 800;
+      margin: 4px 6px 4px 0;
+    }
+
+    .note {
+      margin-top: 28px;
+      padding: 16px 20px;
+      border: 1px solid rgba(255, 180, 84, .36);
+      background: rgba(255, 180, 84, .09);
+      color: #ffe2b8;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 34px;
+    }
+
+    .bad { border-color: rgba(255,107,107,.36); }
+    .bad::before { background: var(--red); }
+    .good { border-color: rgba(98,230,167,.38); }
+    .good::before { background: var(--green); }
+
+    .number {
+      width: 34px;
+      height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(40,216,255,.65);
+      background: rgba(40,216,255,.1);
+      color: var(--cyan);
+      font-weight: 900;
+      margin-bottom: 14px;
+    }
+
+    .footer-tip {
+      position: absolute;
+      left: 78px;
+      bottom: 38px;
+      color: rgba(215,232,248,.42);
+      font-size: 13px;
+    }
+
+    @media (max-width: 980px) {
+      .slide { padding: 44px 28px; }
+      .slide::before { inset: 12px; }
+      .brand { right: 28px; top: 24px; }
+      .grid.two, .grid.three, .grid.four, .compare { grid-template-columns: 1fr; }
+      .formula { grid-template-columns: 1fr; }
+      .op { transform: rotate(90deg); }
+      .pipeline { grid-template-columns: 1fr; }
+      .pipe::after { content: "↓"; right: 20px; top: auto; bottom: -20px; }
+      .matrix, .matrix.five { grid-template-columns: 1fr; }
+      .matrix div, .matrix.five div { border-right: 0; }
+      .lane { grid-template-columns: 1fr; }
+      .lane .label { border-right: 0; border-bottom: 1px solid var(--line); }
+      .nav { display: none; }
+    }
+
+    @media print {
+      body { background: #050b14; }
+      .slide { page-break-after: always; min-height: 720px; }
+      .nav, .progress { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <nav class="nav" aria-label="页面导航">
+    <a href="#s1"></a><a href="#s2"></a><a href="#s3"></a><a href="#s4"></a><a href="#s5"></a>
+    <a href="#s6"></a><a href="#s7"></a><a href="#s8"></a><a href="#s9"></a><a href="#s10"></a>
+    <a href="#s11"></a><a href="#s12"></a><a href="#s13"></a><a href="#s14"></a><a href="#s15"></a>
+  </nav>
+
+  <main class="deck">
+    <section class="slide" id="s1" data-page="01 / 15">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">Harness Training Deck</div>
+      <h1>白酒直播电商 Harness：<br><span class="accent">把直播间变成可复盘的经营系统</span></h1>
+      <p class="sub">不是让 AI 写几句直播话术，而是把白酒直播电商拆成合规、货盘、内容、直播、投流、履约、复购和复盘的标准化链路，让每场直播都有输入、执行、数据和沉淀。</p>
+      <div class="bigline"><span class="accent">流程</span> + <span class="green">工具</span> + <span class="orange">规则</span> = <span class="yellow">可交付的直播经营结果</span></div>
+      <div class="footer-tip">适用对象：白酒品牌方、酒类经销商、直播运营团队、电商操盘手、业务负责人。</div>
+    </section>
+
+    <section class="slide" id="s2" data-page="02 / 15">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">Business Nature</div>
+      <h2>白酒直播电商不是“开播卖货”，而是<span class="accent">高合规、高客单、高复购的经营工程</span></h2>
+      <div class="grid three">
+        <div class="card">
+          <div class="number">1</div>
+          <h3>先合规，再增长</h3>
+          <p>酒类资质、品牌授权、商品发布、营销话术、售后承诺都要先过规则闸门。规则没立住，后面的 GMV 没有意义。</p>
+        </div>
+        <div class="card green">
+          <div class="number">2</div>
+          <h3>先货盘，再直播</h3>
+          <p>直播间卖的不是单个 SKU，而是引流品、利润品、形象品、福利品和复购品之间的组合效率。</p>
+        </div>
+        <div class="card orange">
+          <div class="number">3</div>
+          <h3>先数据，再投流</h3>
+          <p>投流前要知道哪类用户、哪类货盘、哪种话术、哪个主播动作能带来成交，而不是盲目加预算。</p>
+        </div>
+      </div>
+      <p class="sub">所以 Harness 的第一步不是生成内容，而是把直播间变成可执行、可监控、可复盘、可复制的业务系统。</p>
+    </section>
+
+    <section class="slide" id="s3" data-page="03 / 15">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">Ordinary AI vs Harness</div>
+      <h2>普通 AI 做“内容生成”，Harness 做<span class="accent">经营闭环</span></h2>
+      <div class="compare">
+        <div class="card bad">
+          <h3 class="red">普通 AI 的常见输出</h3>
+          <ul>
+            <li>帮你写直播脚本，但不知道平台禁忌和品牌授权边界。</li>
+            <li>帮你写卖点，但不知道库存、毛利、赠品和售后政策。</li>
+            <li>帮你做复盘，但数据没有统一口径，结论无法行动。</li>
+            <li>单次回答看起来完整，但无法沉淀成下一场直播的 SOP。</li>
+          </ul>
+        </div>
+        <div class="card good">
+          <h3 class="green">Harness 的工作方式</h3>
+          <ul>
+            <li>先接收资料：资质、货盘、价格、库存、直播记录、投流数据。</li>
+            <li>再套规则：合规、品牌、价格、库存、售后、预算闸门。</li>
+            <li>再产出交付物：排品表、直播脚本、投流计划、复盘表。</li>
+            <li>最后回收数据：把经验沉淀到下一轮货盘和话术。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="s4" data-page="04 / 15">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">Core Formula</div>
+      <h2>白酒直播电商 Harness 的核心公式</h2>
+      <div class="formula">
+        <div class="box"><strong>流程</strong><span>把从商品入库到复购召回的动作拆成固定节点，每个节点都有输入和输出。</span></div>
+        <div class="op">+</div>
+        <div class="box"><strong>工具</strong><span>抖店后台、直播中控、巨量千川、飞鸽、ERP/WMS、表格、BI、AI 助手。</span></div>
+        <div class="op">+</div>
+        <div class="box"><strong>规则</strong><span>合规校验、价格校验、库存校验、预算校验、话术校验、售后校验。</span></div>
+        <div class="op">=</div>
+        <div class="box"><strong>交付物</strong><span>货盘表、排品表、直播脚本、投流计划、FAQ、复盘报告、复购策略。</span></div>
+      </div>
+      <div class="note">执行原则：AI 只能提高生产和分析效率，不能替代平台规则、财务边界、法务合规和业务负责人确认。</div>
+    </section>
+
+    <section class="slide" id="s5" data-page="05 / 15">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">Eight Workstreams</div>
+      <h2>把白酒直播间拆成 8 条业务泳道</h2>
+      <div class="pipeline">
+        <div class="pipe"><strong>资质合规</strong><span>店铺资质、酒类许可、品牌授权、商品发布、话术禁区。</span></div>
+        <div class="pipe"><strong>货盘管理</strong><span>引流品、利润品、形象品、福利品、复购品、赠品机制。</span></div>
+        <div class="pipe"><strong>内容资产</strong><span>卖点库、场景话术、主播脚本、短视频素材、商品卡文案。</span></div>
+        <div class="pipe"><strong>直播执行</strong><span>开场、讲品、憋单、互动、成交、加购、转品、下播。</span></div>
+        <div class="pipe"><strong>投流增长</strong><span>预算、计划、定向、素材、ROI、成交成本、放量节奏。</span></div>
+        <div class="pipe"><strong>履约售后</strong><span>库存、发货、物流、破损、退换、客诉、评价维护。</span></div>
+        <div class="pipe"><strong>会员复购</strong><span>老客画像、购买周期、饮用场景、节日送礼、私域承接。</span></div>
+        <div class="pipe"><strong>数据复盘</strong><span>日复盘、周复盘、货盘复盘、主播复盘、投流复盘。</span></div>
+      </div>
+    </section>
+
+    <section class="slide" id="s6" data-page="06 / 15">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">Input To Output</div>
+      <h2>不是“给 AI 一个问题”，而是给 AI 一套<span class="accent">结构化输入链路</span></h2>
+      <div class="matrix five">
+        <div class="head">输入类型</div><div class="head">资料来源</div><div class="head">AI 处理方式</div><div class="head">人工闸门</div><div class="head">输出物</div>
+        <div class="strong">资质与授权</div><div>营业资质、品牌授权、平台要求</div><div>整理合规清单和缺失项</div><div>法务/店铺负责人确认</div><div>开播合规检查表</div>
+        <div class="strong">商品货盘</div><div>SKU、价格、库存、毛利、赠品</div><div>按角色拆分货盘结构</div><div>负责人确认价格和库存</div><div>直播排品表</div>
+        <div class="strong">内容资料</div><div>品牌故事、产品卖点、用户评价</div><div>生成话术库和脚本</div><div>合规和品牌口径确认</div><div>主播脚本/商品卡文案</div>
+        <div class="strong">直播数据</div><div>场观、转化、成交、退款、投流</div><div>识别瓶颈和动作建议</div><div>运营负责人确认优先级</div><div>日/周复盘报告</div>
+      </div>
+    </section>
+
+    <section class="slide" id="s7" data-page="07 / 15">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">Tool Stack</div>
+      <h2>工具不是越多越好，关键是<span class="accent">每个工具负责一个节点</span></h2>
+      <div class="grid four">
+        <div class="card"><h3>平台后台</h3><p>抖店、直播中控、商品管理、订单管理、售后管理。用于承接真实交易和平台规则。</p></div>
+        <div class="card green"><h3>投流工具</h3><p>巨量千川等投放工具。用于预算、计划、素材、转化和 ROI 监控。</p></div>
+        <div class="card orange"><h3>客服履约</h3><p>飞鸽、ERP/WMS、物流和售后表。用于订单、库存、发货、客诉、评价。</p></div>
+        <div class="card purple"><h3>AI 与表格</h3><p>AI 用于提炼、生成、复盘和归档；表格用于沉淀口径、任务、数据和交付物。</p></div>
+      </div>
+      <div class="note">规则提醒：涉及平台禁限售、酒类资质、广告宣传和售后承诺的内容，应以抖店后台及抖音电商学习中心最新规则为准。</div>
+    </section>
+
+    <section class="slide" id="s8" data-page="08 / 15">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">Deliverable Matrix</div>
+      <h2>每个业务节点都要形成一个可复用交付物</h2>
+      <div class="matrix">
+        <div class="head">业务节点</div><div class="head">AI 可处理内容</div><div class="head">标准交付物</div><div class="head">不能交给 AI 的部分</div>
+        <div class="strong">货盘</div><div>按定位、毛利、库存、复购拆分 SKU</div><div>直播货盘表、排品表、利益点清单</div><div>最终价格、库存承诺、利润边界</div>
+        <div class="strong">内容</div><div>卖点提炼、场景话术、主播脚本、FAQ</div><div>直播脚本、商品卡文案、客服话术</div><div>夸大宣传、疗效暗示、违规承诺</div>
+        <div class="strong">直播</div><div>按节奏生成开播、讲品、转品、逼单动作</div><div>单场直播执行表、主播 SOP</div><div>现场节奏、主播临场判断、违规兜底</div>
+        <div class="strong">投流</div><div>根据数据复盘素材、计划和预算方向</div><div>投流复盘表、下一场测试清单</div><div>预算审批、账户策略、投放风险</div>
+        <div class="strong">复购</div><div>按用户场景生成召回和会员运营策略</div><div>老客复购表、节日活动表、客服触达话术</div><div>个人信息合规、私域承接边界</div>
+      </div>
+    </section>
+
+    <section class="slide" id="s9" data-page="09 / 15">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">Live Operation Harness</div>
+      <h2>单场直播要按<span class="accent">开播前、直播中、下播后</span>三段执行</h2>
+      <div class="swim">
+        <div class="lane">
+          <div class="label">开播前</div>
+          <div class="cell">检查资质、商品、库存、价格、赠品和售后政策</div>
+          <div class="cell">确认排品顺序、主播脚本、互动问题和转品逻辑</div>
+          <div class="cell">准备商品卡、短视频素材、直播间视觉和投流计划</div>
+          <div class="cell">AI 输出开播检查表和脚本，人工确认关键承诺</div>
+          <div class="cell">形成《单场直播执行表》</div>
+        </div>
+        <div class="lane">
+          <div class="label">直播中</div>
+          <div class="cell">监控在线人数、停留、互动、商品点击和成交变化</div>
+          <div class="cell">根据数据提示主播补充卖点、切换 SKU 或加速成交</div>
+          <div class="cell">记录违规风险、用户高频问题和客诉苗头</div>
+          <div class="cell">AI 只做提示和记录，不直接替代负责人决策</div>
+          <div class="cell">形成《直播中控记录表》</div>
+        </div>
+        <div class="lane">
+          <div class="label">下播后</div>
+          <div class="cell">汇总 GMV、成交、退款、投流、转化和 SKU 动销</div>
+          <div class="cell">识别高转化话术、低效 SKU、售后问题和投流浪费点</div>
+          <div class="cell">输出下一场排品、话术、投流和客服优化动作</div>
+          <div class="cell">负责人确认动作优先级和责任人</div>
+          <div class="cell">形成《单场复盘报告》</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="s10" data-page="10 / 15">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">Data Harness</div>
+      <h2>数据不是看热闹，而是用来判断<span class="accent">下一场改什么</span></h2>
+      <div class="grid three">
+        <div class="card">
+          <h3>流量效率</h3>
+          <p>场观、进入率、停留时长、互动率、粉丝占比。用于判断直播间承接能力和内容吸引力。</p>
+        </div>
+        <div class="card green">
+          <h3>转化效率</h3>
+          <p>商品点击率、加购率、成交转化率、客单价、SKU 动销。用于判断货盘、话术和价格机制。</p>
+        </div>
+        <div class="card orange">
+          <h3>经营质量</h3>
+          <p>ROI、退款率、售后率、发货异常、评价质量、老客复购。用于判断是否值得继续放量。</p>
+        </div>
+      </div>
+      <div class="matrix">
+        <div class="head">问题表现</div><div class="head">可能原因</div><div class="head">AI 输出动作</div><div class="head">人工确认</div>
+        <div class="strong">流量多但成交少</div><div>货盘不匹配、话术不清、利益点弱</div><div>重写讲品脚本，调整主推 SKU 顺序</div><div>价格和赠品是否可改</div>
+        <div class="strong">点击高但支付低</div><div>页面承接、库存、价格、优惠机制问题</div><div>检查商品卡、优惠表达和客服 FAQ</div><div>店铺后台和库存是否正常</div>
+        <div class="strong">成交好但退款高</div><div>宣传预期过高、履约异常、售后口径不清</div><div>补充售前风险提示和售后话术</div><div>是否需要调整商品或承诺边界</div>
+      </div>
+    </section>
+
+    <section class="slide" id="s11" data-page="11 / 15">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">Compliance Gates</div>
+      <h2>白酒直播的 Harness 必须有<span class="accent">人工闸门</span></h2>
+      <div class="grid three">
+        <div class="card red">
+          <h3>合规闸门</h3>
+          <ul>
+            <li>酒类经营资质。</li>
+            <li>品牌授权链路。</li>
+            <li>商品发布规则。</li>
+            <li>营销宣传话术。</li>
+          </ul>
+        </div>
+        <div class="card orange">
+          <h3>经营闸门</h3>
+          <ul>
+            <li>价格机制。</li>
+            <li>毛利边界。</li>
+            <li>库存承诺。</li>
+            <li>赠品和活动政策。</li>
+          </ul>
+        </div>
+        <div class="card green">
+          <h3>履约闸门</h3>
+          <ul>
+            <li>发货时效。</li>
+            <li>破损处理。</li>
+            <li>退换货口径。</li>
+            <li>客服升级机制。</li>
+          </ul>
+        </div>
+      </div>
+      <p class="sub">AI 可以把风险列出来，但不能替代负责人签字。尤其是价格、资质、宣传、售后承诺，必须有人负责。</p>
+    </section>
+
+    <section class="slide" id="s12" data-page="12 / 15">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">Agent Roles</div>
+      <h2>直播团队可以配置 6 类 AI 角色，但每个角色都要有边界</h2>
+      <div class="grid three">
+        <div class="card"><h3>货盘助手</h3><p>整理 SKU、价格、库存、毛利、赠品，输出排品建议和货盘风险。</p></div>
+        <div class="card green"><h3>脚本助手</h3><p>把品牌资料、产品卖点和用户问题转成开场、讲品、转品和成交话术。</p></div>
+        <div class="card orange"><h3>合规助手</h3><p>对话术、商品页、直播承诺进行风险提示，但最终仍由负责人确认。</p></div>
+        <div class="card purple"><h3>投流助手</h3><p>基于投放数据提出素材、预算、计划和复盘方向，不直接决定预算。</p></div>
+        <div class="card blue"><h3>客服助手</h3><p>沉淀用户高频问题、售前 FAQ、售后口径和客诉升级路径。</p></div>
+        <div class="card"><h3>复盘助手</h3><p>把单场直播数据转成问题、原因、下一步动作和责任人清单。</p></div>
+      </div>
+    </section>
+
+    <section class="slide" id="s13" data-page="13 / 15">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">30-Day Rollout</div>
+      <h2>30 天先跑出一个<span class="accent">可复用直播经营底盘</span></h2>
+      <div class="matrix five">
+        <div class="head">阶段</div><div class="head">核心目标</div><div class="head">关键动作</div><div class="head">输出物</div><div class="head">验收标准</div>
+        <div class="strong">第 1 周</div><div>搭建基础资料库</div><div>整理资质、货盘、价格、库存、售后、品牌资料</div><div>资料清单、货盘表、合规检查表</div><div>资料可被直接调用</div>
+        <div class="strong">第 2 周</div><div>标准化直播执行</div><div>建立排品表、脚本模板、主播 SOP、直播检查表</div><div>单场直播执行包</div><div>每场直播按表执行</div>
+        <div class="strong">第 3 周</div><div>建立数据复盘机制</div><div>按统一口径记录转化、投流、退款、售后和 SKU 表现</div><div>日复盘/周复盘模板</div><div>每场能形成下一步动作</div>
+        <div class="strong">第 4 周</div><div>开始复购和放量</div><div>沉淀老客、节日、礼赠、私域和客服触达策略</div><div>复购策略表、活动节奏表</div><div>形成可迭代 SOP</div>
+      </div>
+      <div class="note">这里不承诺具体 GMV 和 ROI，目标是先把“能稳定执行和复盘”的系统搭起来。</div>
+    </section>
+
+    <section class="slide" id="s14" data-page="14 / 15">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">Workshop</div>
+      <h2>实操练习：给 AI 的不是一句话，而是一包资料</h2>
+      <div class="grid two">
+        <div class="card">
+          <h3>输入资料包</h3>
+          <ul>
+            <li>1、SKU 表：商品名、规格、价格、库存、毛利、赠品。</li>
+            <li>2、品牌资料：品牌故事、卖点、适用场景、用户评价。</li>
+            <li>3、最近 3 场直播数据：成交、转化、退款、投流、问题。</li>
+            <li>4、售后记录：高频问题、客诉、退换原因。</li>
+          </ul>
+        </div>
+        <div class="card green">
+          <h3>输出经营包</h3>
+          <ul>
+            <li>1、本周直播排品表。</li>
+            <li>2、主播脚本和商品讲解卡。</li>
+            <li>3、合规风险提醒清单。</li>
+            <li>4、投流测试方向和复盘表。</li>
+            <li>5、客服 FAQ 与复购触达话术。</li>
+          </ul>
+        </div>
+      </div>
+      <p class="sub">训练团队的重点，是让每个人知道：资料怎么给、规则怎么卡、结果怎么验收、经验怎么沉淀。</p>
+    </section>
+
+    <section class="slide" id="s15" data-page="15 / 15">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">Closing</div>
+      <h2>白酒直播电商 Harness 的最终目标：<span class="accent">让经营动作可以复制</span></h2>
+      <div class="grid three">
+        <div class="card">
+          <h3>把经验结构化</h3>
+          <p>不再依赖“这个主播感觉不错”“这个品好像能卖”，而是把货盘、话术、转化和售后都沉淀成表。</p>
+        </div>
+        <div class="card green">
+          <h3>把 AI 工具化</h3>
+          <p>AI 不替代负责人判断，而是帮团队更快整理资料、生成脚本、识别问题、输出行动清单。</p>
+        </div>
+        <div class="card orange">
+          <h3>把直播系统化</h3>
+          <p>每场直播都能回到同一套经营闭环：输入资料、执行动作、读取数据、修正下一场。</p>
+        </div>
+      </div>
+      <div class="bigline">一句话：<span class="yellow">不是用 AI 写直播话术，而是用 AI 搭建直播经营系统。</span></div>
+      <div class="footer-tip">平台规则和酒类合规要求存在变化，本资料仅作为内部方法论和流程培训，具体执行以最新平台规则及公司负责人确认为准。</div>
+    </section>
+  </main>
+
+  <script>
+    const progress = document.getElementById('progress');
+    const updateProgress = () => {
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      const ratio = total > 0 ? window.scrollY / total : 0;
+      progress.style.width = `${Math.max(0, Math.min(1, ratio)) * 100}%`;
+    };
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    window.addEventListener('resize', updateProgress);
+    updateProgress();
+  </script>
+</body>
+</html>

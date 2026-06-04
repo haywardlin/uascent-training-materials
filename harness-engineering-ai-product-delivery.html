@@ -1,0 +1,696 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Harness Engineering：把 AI 变成产品交付系统</title>
+  <style>
+    :root {
+      --bg: #050b14;
+      --bg2: #081321;
+      --panel: rgba(13, 28, 50, .82);
+      --panel2: rgba(7, 18, 34, .72);
+      --line: rgba(80, 210, 255, .22);
+      --line2: rgba(255, 255, 255, .08);
+      --text: #f0f7ff;
+      --muted: #9cb1c7;
+      --soft: #d5e8f8;
+      --cyan: #24d7ff;
+      --blue: #4c8dff;
+      --green: #58e6a7;
+      --orange: #ffb454;
+      --red: #ff6b6b;
+      --purple: #a98bff;
+      --yellow: #ffe27a;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: var(--bg); }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+      background:
+        linear-gradient(rgba(255,255,255,.034) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.034) 1px, transparent 1px),
+        radial-gradient(circle at 8% 12%, rgba(36, 215, 255, .2), transparent 30%),
+        radial-gradient(circle at 86% 20%, rgba(76, 141, 255, .16), transparent 32%),
+        linear-gradient(145deg, #050b14 0%, #071222 55%, #0a1b2d 100%);
+      background-size: 44px 44px, 44px 44px, auto, auto, auto;
+      overflow-x: hidden;
+    }
+
+    .progress {
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 4px;
+      width: 0;
+      background: linear-gradient(90deg, var(--cyan), var(--blue));
+      z-index: 20;
+    }
+
+    .nav {
+      position: fixed;
+      right: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .nav a {
+      width: 8px;
+      height: 8px;
+      border: 1px solid rgba(36, 215, 255, .7);
+      background: rgba(36, 215, 255, .12);
+      display: block;
+    }
+
+    .deck { scroll-snap-type: y mandatory; }
+
+    .slide {
+      min-height: 100vh;
+      padding: 50px 78px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      scroll-snap-align: start;
+    }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: 24px;
+      border: 1px solid var(--line);
+      pointer-events: none;
+    }
+
+    .slide::after {
+      content: attr(data-page);
+      position: absolute;
+      right: 78px;
+      bottom: 40px;
+      color: rgba(213,232,248,.34);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .brand {
+      position: absolute;
+      right: 78px;
+      top: 42px;
+      color: #7ea6ff;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: .02em;
+    }
+
+    .brand span { color: var(--orange); }
+
+    .kicker {
+      color: var(--cyan);
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    h1 {
+      max-width: 1080px;
+      font-size: clamp(42px, 5.3vw, 76px);
+      line-height: 1.06;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      max-width: 1080px;
+      font-size: clamp(34px, 4vw, 56px);
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      font-size: 22px;
+      line-height: 1.28;
+    }
+
+    .sub {
+      max-width: 940px;
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 21px;
+      line-height: 1.55;
+    }
+
+    .accent { color: var(--cyan); }
+    .green { color: var(--green); }
+    .orange { color: var(--orange); }
+    .red { color: var(--red); }
+    .purple { color: var(--purple); }
+    .yellow { color: var(--yellow); }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+      margin-top: 34px;
+    }
+
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .card {
+      background: linear-gradient(180deg, var(--panel), rgba(7, 18, 34, .82));
+      border: 1px solid var(--line);
+      padding: 22px;
+      min-height: 148px;
+      box-shadow: 0 22px 60px rgba(0,0,0,.26);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--cyan);
+    }
+
+    .card.blue::before { background: var(--blue); }
+    .card.green::before { background: var(--green); }
+    .card.orange::before { background: var(--orange); }
+    .card.red::before { background: var(--red); }
+    .card.purple::before { background: var(--purple); }
+
+    .card h3 {
+      margin-bottom: 12px;
+      color: var(--soft);
+    }
+
+    .card p, .card li {
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    ul { margin: 0; padding-left: 18px; }
+
+    .bigline {
+      margin-top: 30px;
+      max-width: 1120px;
+      font-size: clamp(28px, 3.2vw, 46px);
+      line-height: 1.25;
+      font-weight: 900;
+    }
+
+    .formula {
+      display: grid;
+      grid-template-columns: 1fr 60px 1fr 60px 1fr 60px 1.1fr;
+      align-items: center;
+      gap: 12px;
+      margin-top: 42px;
+    }
+
+    .box {
+      min-height: 140px;
+      border: 1px solid var(--line);
+      background: rgba(13, 28, 50, .76);
+      padding: 22px;
+    }
+
+    .box strong {
+      display: block;
+      color: var(--cyan);
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .box span {
+      display: block;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    .op {
+      color: var(--cyan);
+      text-align: center;
+      font-size: 38px;
+      font-weight: 900;
+    }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(9, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 34px;
+    }
+
+    .pipe {
+      min-height: 128px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      background: rgba(13, 28, 50, .78);
+      position: relative;
+    }
+
+    .pipe strong {
+      display: block;
+      font-size: 17px;
+      color: var(--soft);
+      margin-bottom: 8px;
+    }
+
+    .pipe span {
+      display: block;
+      color: var(--muted);
+      font-size: 13.5px;
+      line-height: 1.36;
+    }
+
+    .pipe::after {
+      content: "→";
+      position: absolute;
+      right: -12px;
+      top: 48px;
+      color: var(--cyan);
+      z-index: 2;
+      font-weight: 900;
+    }
+
+    .pipe:last-child::after { content: ""; }
+
+    .matrix {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr 1.45fr 1.2fr;
+      margin-top: 32px;
+      border: 1px solid var(--line);
+      background: rgba(7, 18, 34, .62);
+    }
+
+    .matrix div {
+      min-height: 58px;
+      padding: 13px 15px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.42;
+    }
+
+    .matrix div:nth-child(4n) { border-right: 0; }
+
+    .matrix .head {
+      color: var(--cyan);
+      background: rgba(36, 215, 255, .09);
+      font-weight: 900;
+    }
+
+    .matrix .strong {
+      color: var(--soft);
+      font-weight: 800;
+    }
+
+    .swim {
+      margin-top: 32px;
+      border: 1px solid var(--line);
+      background: rgba(7, 18, 34, .62);
+    }
+
+    .lane {
+      display: grid;
+      grid-template-columns: 150px repeat(6, 1fr);
+      border-bottom: 1px solid var(--line2);
+      min-height: 76px;
+    }
+
+    .lane:last-child { border-bottom: 0; }
+
+    .lane .label {
+      padding: 20px 18px;
+      background: rgba(36, 215, 255, .09);
+      color: var(--cyan);
+      font-weight: 900;
+      border-right: 1px solid var(--line);
+    }
+
+    .lane .cell {
+      padding: 16px 12px;
+      border-right: 1px solid var(--line2);
+      color: var(--muted);
+      font-size: 13.5px;
+      line-height: 1.38;
+    }
+
+    .lane .cell:last-child { border-right: 0; }
+
+    .tag {
+      display: inline-flex;
+      border: 1px solid var(--line);
+      background: rgba(36, 215, 255, .08);
+      color: var(--soft);
+      padding: 6px 10px;
+      font-size: 13px;
+      font-weight: 800;
+      margin: 4px 6px 4px 0;
+    }
+
+    .note {
+      margin-top: 28px;
+      padding: 16px 20px;
+      border: 1px solid rgba(255, 180, 84, .35);
+      background: rgba(255, 180, 84, .09);
+      color: #ffe2b8;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 34px;
+    }
+
+    .bad { border-color: rgba(255,107,107,.36); }
+    .bad::before { background: var(--red); }
+    .good { border-color: rgba(88,230,167,.38); }
+    .good::before { background: var(--green); }
+
+    .number {
+      width: 34px;
+      height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(36,215,255,.65);
+      background: rgba(36,215,255,.1);
+      color: var(--cyan);
+      font-weight: 900;
+      margin-bottom: 14px;
+    }
+
+    .footer-tip {
+      position: absolute;
+      left: 78px;
+      bottom: 38px;
+      color: rgba(213,232,248,.42);
+      font-size: 13px;
+    }
+
+    @media (max-width: 980px) {
+      .slide { padding: 44px 28px; }
+      .slide::before { inset: 12px; }
+      .brand { right: 28px; top: 24px; }
+      .grid.two, .grid.three, .grid.four, .compare { grid-template-columns: 1fr; }
+      .formula { grid-template-columns: 1fr; }
+      .op { transform: rotate(90deg); }
+      .pipeline { grid-template-columns: 1fr; }
+      .pipe::after { content: "↓"; right: 20px; top: auto; bottom: -20px; }
+      .matrix { grid-template-columns: 1fr; }
+      .matrix div { border-right: 0; }
+      .lane { grid-template-columns: 1fr; }
+      .lane .label { border-right: 0; border-bottom: 1px solid var(--line); }
+      .nav { display: none; }
+    }
+
+    @media print {
+      body { background: #050b14; }
+      .slide { page-break-after: always; min-height: 720px; }
+      .nav, .progress { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <nav class="nav" aria-label="页面导航">
+    <a href="#s1"></a><a href="#s2"></a><a href="#s3"></a><a href="#s4"></a><a href="#s5"></a>
+    <a href="#s6"></a><a href="#s7"></a><a href="#s8"></a><a href="#s9"></a><a href="#s10"></a>
+    <a href="#s11"></a><a href="#s12"></a><a href="#s13"></a><a href="#s14"></a>
+  </nav>
+
+  <main class="deck">
+    <section class="slide" id="s1" data-page="01 / 14">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">Training Deck</div>
+      <h1>Harness Engineering：<br><span class="accent">把 AI 变成产品交付系统</span></h1>
+      <p class="sub">面向 AI 硬件、AI 家电和客户项目交付的产品方法论。重点不是“怎么问 AI”，而是把流程、工具、规则和模板连接起来，让 AI 稳定产出可交付文件。</p>
+      <div class="bigline">核心公式：<span class="accent">流程</span> + <span class="green">工具</span> + <span class="orange">规则</span> = <span class="yellow">交付物</span></div>
+      <div class="footer-tip">建议讲解时长：45-60 分钟；适合产品、销售、项目、研发协同培训。</div>
+    </section>
+
+    <section class="slide" id="s2" data-page="02 / 14">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">What Problem It Solves</div>
+      <h2>这套课不是讲“AI很厉害”，而是讲<span class="accent">工作怎么被交付系统接管</span></h2>
+      <div class="grid three">
+        <div class="card">
+          <div class="number">1</div>
+          <h3>资料入口混乱</h3>
+          <p>客户资料来自微信、PDF、PPT、Excel、图片、会议纪要，普通 AI 只能回答，不能稳定归档和继承上下文。</p>
+        </div>
+        <div class="card green">
+          <div class="number">2</div>
+          <h3>模板口径不稳定</h3>
+          <p>AI 硬件、AI 家电、离线语音、PCBA 核价、PRD、方案评估都有不同模板，混用会直接影响研发和客户理解。</p>
+        </div>
+        <div class="card orange">
+          <div class="number">3</div>
+          <h3>交付质量靠人盯</h3>
+          <p>如果没有人工闸门和校验规则，AI 容易编数字、改模板、漏字段、乱承诺周期和报价。</p>
+        </div>
+      </div>
+      <p class="sub">Harness Engineering 的目标，是把“人脑里的工作流”工程化，让每次输入都被路由到正确模板、正确目录、正确输出物。</p>
+    </section>
+
+    <section class="slide" id="s3" data-page="03 / 14">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">Ordinary AI vs Harness AI</div>
+      <h2>普通 AI 是问答工具，Harness AI 是<span class="accent">带边界的执行系统</span></h2>
+      <div class="compare">
+        <div class="card bad">
+          <h3 class="red">普通 AI 的典型问题</h3>
+          <ul>
+            <li>只看当前聊天，不知道历史模板和客户项目目录。</li>
+            <li>缺少模板分流，AI 硬件和 AI 家电容易混写。</li>
+            <li>会把经验判断写成事实，把缺失数字写成承诺。</li>
+            <li>生成文档后不校验格式、路径、边框、合并单元格。</li>
+            <li>不会自动沉淀到知识库和项目索引。</li>
+          </ul>
+        </div>
+        <div class="card good">
+          <h3 class="green">Harness AI 的执行方式</h3>
+          <ul>
+            <li>先判断项目类型、阶段、交付对象和输出物。</li>
+            <li>按 SOP 读取模板、历史案例、项目索引和 profile。</li>
+            <li>用 Skill 执行特定任务，例如 PRD、方案、核价、埋点。</li>
+            <li>输出前做表格、PPT、路径、来源和人工闸门校验。</li>
+            <li>交付后更新项目索引、方案库和工作流资产。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="s4" data-page="04 / 14">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">Core Formula</div>
+      <h2>Harness Engineering 的核心公式</h2>
+      <div class="formula">
+        <div class="box"><strong>流程</strong><span>把工作拆成固定入口、判断、分流、生成、校验、归档和沉淀。</span></div>
+        <div class="op">+</div>
+        <div class="box"><strong>工具</strong><span>让 AI 调用文件系统、Excel、PPT、Word、浏览器、Figma、GitHub、数据分析等能力。</span></div>
+        <div class="op">+</div>
+        <div class="box"><strong>规则</strong><span>用模板、字段、人工闸门、数据来源、格式规范限制 AI 不乱发挥。</span></div>
+        <div class="op">=</div>
+        <div class="box"><strong>交付物</strong><span>PRD、方案评估、客户 PPT、PCBA 核价、埋点表、项目计划、周报、标准方案库。</span></div>
+      </div>
+      <div class="note">关键判断：AI 的价值不在于“生成一段文字”，而在于让输入资料稳定流向正确交付物，并能被研发、测试、销售、客户继续使用。</div>
+    </section>
+
+    <section class="slide" id="s5" data-page="05 / 14">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">Your Real Workflow</div>
+      <h2>集贤科技当前已经在做的，是一套<span class="accent">产品交付 Harness</span></h2>
+      <div class="grid four">
+        <div class="card"><h3>客户项目</h3><p>收件箱归档、客户目录、项目索引、会议纪要、需求确认、方案评估。</p></div>
+        <div class="card green"><h3>产品定义</h3><p>AI 硬件 PRD、AI 家电 PRD、交互矩阵、状态机、时序图、使用说明书。</p></div>
+        <div class="card orange"><h3>方案报价</h3><p>方案 PPT、NRE、项目周期、PCBA 核价、认证资料、供应链规格书整理。</p></div>
+        <div class="card purple"><h3>运营沉淀</h3><p>埋点、周报、项目跟进表、竞品差评、标准方案库、活动 SOP。</p></div>
+      </div>
+      <p class="sub">这些不是零散 AI 任务，而是同一个底层模式：把模糊输入压缩成结构化判断，再输出可执行交付物。</p>
+    </section>
+
+    <section class="slide" id="s6" data-page="06 / 14">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">End-to-End Harness</div>
+      <h2>标准执行链路：从输入资料到最终交付物</h2>
+      <div class="pipeline">
+        <div class="pipe"><strong>输入识别</strong><span>资料类型、客户、项目、阶段、交付对象。</span></div>
+        <div class="pipe"><strong>资料归档</strong><span>收件箱进入客户项目目录或对应管理目录。</span></div>
+        <div class="pipe"><strong>上下文装配</strong><span>读取 profile、SOP、模板、历史案例、项目索引。</span></div>
+        <div class="pipe"><strong>模板匹配</strong><span>AI 硬件、AI 家电、PCBA、PRD、周报分流。</span></div>
+        <div class="pipe"><strong>内容生成</strong><span>调用 skill 输出 Excel、PPT、Word、HTML、流程图。</span></div>
+        <div class="pipe"><strong>人工闸门</strong><span>报价、周期、芯片选型、对外承诺必须人工确认。</span></div>
+        <div class="pipe"><strong>文件校验</strong><span>格式、来源、边框、合并单元格、遮挡、路径检查。</span></div>
+        <div class="pipe"><strong>索引更新</strong><span>项目索引、客户索引、标准方案库同步更新。</span></div>
+        <div class="pipe"><strong>路径反馈</strong><span>最终回复给出完整路径、限制和待确认项。</span></div>
+      </div>
+    </section>
+
+    <section class="slide" id="s7" data-page="07 / 14">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">Tool Stack</div>
+      <h2>工具栈不是越多越好，而是每个工具绑定一个交付环节</h2>
+      <div class="matrix">
+        <div class="head">环节</div><div class="head">工具</div><div class="head">解决的问题</div><div class="head">交付物</div>
+        <div class="strong">资料入口</div><div>收件箱、客户项目目录、项目索引</div><div>避免资料散落、重复、归属不清</div><div>归档目录、项目索引、待确认清单</div>
+        <div class="strong">文档输出</div><div>Documents、Word、PDF、Markdown</div><div>把会议纪要、PRD、说明书、培训文档稳定落地</div><div>Word、PDF、MD、HTML</div>
+        <div class="strong">表格输出</div><div>Spreadsheets、Excel 模板</div><div>处理 PRD、方案评估、核价、排期、埋点、周报</div><div>可筛选、可合并、可交付的 Excel</div>
+        <div class="strong">演示输出</div><div>Presentations、HTML、PPT 模板</div><div>把方案、培训、客户汇报做成可展示材料</div><div>客户方案 PPT、培训 HTML、开发周期页</div>
+        <div class="strong">在线验证</div><div>Browser、Chrome、Playwright、Web</div><div>验证网页、公开资料、竞品信息、链接和截图</div><div>竞品分析、页面截图、可视化验证</div>
+        <div class="strong">设计协同</div><div>Figma、FigJam、流程图/时序图 Skill</div><div>把交互逻辑、状态机和流程变成可编辑图</div><div>流程图、状态机、时序图、原型图</div>
+      </div>
+    </section>
+
+    <section class="slide" id="s8" data-page="08 / 14">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">Template Routing</div>
+      <h2>最关键的不是写得多，而是<span class="accent">选对模板</span></h2>
+      <div class="matrix">
+        <div class="head">项目类型</div><div class="head">典型对象</div><div class="head">默认输出</div><div class="head">关键边界</div>
+        <div class="strong">AI 应用类硬件</div><div>AI 玩具、AI Pet、AI 陪伴、电子吧唧</div><div>方案评估 Excel + 客户方案 PPT + PRD</div><div>严格走 `02_AI硬件解决方案评估模板`，缺失信息留空</div>
+        <div class="strong">AI 家电</div><div>风扇、咖啡机、空炸、蒸烤箱、取暖器</div><div>NRE 明细、项目周期、PCBA 核价、必要时 PRD</div><div>不默认套完整 AI 硬件方案模板</div>
+        <div class="strong">离线语音家电</div><div>本地词条控制、串口协议、语音播报</div><div>版本变更记录、词条协议、播报和异常</div><div>不写 App / AIoT / 大模型，除非产品确实包含</div>
+        <div class="strong">通用 IoT / 模组</div><div>Wi-Fi、BLE、Matter、通信模组接入</div><div>接口、协议、联调项、工作量和周期</div><div>不要扩大成完整 AI 硬件方案</div>
+      </div>
+      <div class="note">模板选错，后面所有内容都会偏。Harness 的第一道关不是生成，而是路由。</div>
+    </section>
+
+    <section class="slide" id="s9" data-page="09 / 14">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">Customer Project Harness</div>
+      <h2>客户项目方案评估：把模糊需求压成可决策文件</h2>
+      <div class="swim">
+        <div class="lane">
+          <div class="label">客户输入</div>
+          <div class="cell">会议纪要</div><div class="cell">产品图片</div><div class="cell">规格书</div><div class="cell">功能表</div><div class="cell">竞品链接</div><div class="cell">老板口头需求</div>
+        </div>
+        <div class="lane">
+          <div class="label">AI 处理</div>
+          <div class="cell">识别客户/项目</div><div class="cell">判断类型</div><div class="cell">匹配模板</div><div class="cell">拆需求</div><div class="cell">列风险</div><div class="cell">生成路径</div>
+        </div>
+        <div class="lane">
+          <div class="label">人工闸门</div>
+          <div class="cell">是否值得推进</div><div class="cell">报价是否可发</div><div class="cell">周期是否承诺</div><div class="cell">芯片是否锁定</div><div class="cell">客户是否确认</div><div class="cell">是否对外发送</div>
+        </div>
+        <div class="lane">
+          <div class="label">最终交付</div>
+          <div class="cell">方案评估 Excel</div><div class="cell">客户方案 PPT</div><div class="cell">需求确认页</div><div class="cell">NRE 明细</div><div class="cell">项目周期</div><div class="cell">项目索引</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="s10" data-page="10 / 14">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">Factory Practice</div>
+      <h2>传统家电工厂最适合先 Harness 化的 6 个场景</h2>
+      <div class="grid three">
+        <div class="card"><h3>1. 电商客户需求导入</h3><p>把聊天记录、客户表格和参考图整理成需求确认表、核价需求和初版方案。</p></div>
+        <div class="card green"><h3>2. 产品立项评审</h3><p>把 AI 升级点、NRE、周期、PCBA 影响、结构风险拆成立项材料。</p></div>
+        <div class="card orange"><h3>3. ID/结构/软硬件协同</h3><p>输出结构边界、开孔、接口、传感器、模组和 MCU 通信要求。</p></div>
+        <div class="card purple"><h3>4. 供应链物料核价</h3><p>把粗略口头需求转换为硬件看得懂的 PCBA 核价表。</p></div>
+        <div class="card blue"><h3>5. 装机验证和测试</h3><p>把状态机、异常分支、按键时长、联调流程变成测试可执行表。</p></div>
+        <div class="card red"><h3>6. 量产和售后沉淀</h3><p>把问题复盘、客户反馈、差评、售后问答变成下一代产品优化清单。</p></div>
+      </div>
+    </section>
+
+    <section class="slide" id="s11" data-page="11 / 14">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">Quality Gate</div>
+      <h2>Harness 的质量，不看“像不像 AI 写的”，看能不能直接交付</h2>
+      <div class="grid two">
+        <div class="card">
+          <h3>格式验收</h3>
+          <ul>
+            <li>Excel：相邻相同内容合并，内容区有边框，垂直居中，左对齐。</li>
+            <li>PPT：Logo、字号、排版统一，图文不遮挡，不乱换风格。</li>
+            <li>HTML：移动端/桌面端可读，文字不溢出，流程图不交叉。</li>
+          </ul>
+        </div>
+        <div class="card green">
+          <h3>内容验收</h3>
+          <ul>
+            <li>客户原文和我方判断分开，需求描述不乱改客户源材料。</li>
+            <li>数字、报价、周期、参数没有来源时，不能写成事实。</li>
+            <li>人工确认点明确标注，不能替人做对外承诺。</li>
+          </ul>
+        </div>
+      </div>
+      <div class="note">交付物要能让研发开发、测试验证、销售沟通、客户确认。不能只让自己觉得“看起来不错”。</div>
+    </section>
+
+    <section class="slide" id="s12" data-page="12 / 14">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">Human Gate</div>
+      <h2>AI 可以生成判断材料，但这 6 类内容必须人工确认</h2>
+      <div class="grid three">
+        <div class="card red"><h3>报价 / NRE 金额</h3><p>涉及商务承诺，AI 只能拆费用模块和报价边界。</p></div>
+        <div class="card red"><h3>开发周期 / 里程碑</h3><p>可给初步评估，但对外承诺必须由负责人确认。</p></div>
+        <div class="card red"><h3>芯片 / 模组最终选型</h3><p>涉及供应链、成本、功耗、尺寸、认证和研发验证。</p></div>
+        <div class="card red"><h3>认证结论</h3><p>法规和测试结果不能靠经验推断。</p></div>
+        <div class="card red"><h3>大模型效果承诺</h3><p>Token、延迟、准确率、内容安全和成本都需验证。</p></div>
+        <div class="card red"><h3>是否对外发送</h3><p>客户敏感资料、禁止外发材料、报价边界必须人工把关。</p></div>
+      </div>
+    </section>
+
+    <section class="slide" id="s13" data-page="13 / 14">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">How To Start</div>
+      <h2>团队上手 Harness Engineering，可以从一个客户项目开始</h2>
+      <div class="grid four">
+        <div class="card"><h3>第 1 步：统一入口</h3><p>所有客户资料先进收件箱，再按客户/项目/资料类型归档。</p></div>
+        <div class="card green"><h3>第 2 步：固定模板</h3><p>每类交付只保留一个默认模板，历史模板归档，不随意切换。</p></div>
+        <div class="card orange"><h3>第 3 步：写清规则</h3><p>字段边界、缺失信息、人工闸门、格式验收全部写进 SOP。</p></div>
+        <div class="card purple"><h3>第 4 步：沉淀 Skill</h3><p>每次重复出现的工作，都固化成 skill、模板或项目 SOP。</p></div>
+      </div>
+      <div class="bigline">真正的成果不是“做完一个文档”，而是下次同类项目可以<span class="accent">更快、更准、更少返工</span>。</div>
+    </section>
+
+    <section class="slide" id="s14" data-page="14 / 14">
+      <div class="brand">Uas<span>cent</span> 集贤科技</div>
+      <div class="kicker">Workshop</div>
+      <h2>培训后的实操练习：把一个客户需求跑完整条 Harness</h2>
+      <div class="matrix">
+        <div class="head">练习</div><div class="head">输入</div><div class="head">要求</div><div class="head">交付物</div>
+        <div class="strong">客户项目入口</div><div>客户会议纪要 + 产品图片</div><div>判断客户、项目、阶段、目录</div><div>项目索引 + 原始资料归档</div>
+        <div class="strong">方案评估</div><div>客户需求 + 类似案例</div><div>按项目类型选择模板，不乱补数字</div><div>方案评估 Excel + 客户 PPT</div>
+        <div class="strong">PRD 输出</div><div>已确认需求 + 方案资料</div><div>拆硬件、固件、App、云、大模型需求</div><div>PRD Excel + 交互矩阵</div>
+        <div class="strong">复盘沉淀</div><div>交付结果 + 问题记录</div><div>形成可复用规则和下次入口</div><div>方案沉淀 + Skill 更新建议</div>
+      </div>
+      <div class="note">结论：Harness Engineering 是产品经理把 AI 用到业务深处的方法。它不替代人的判断，但能替代大量重复的整理、归档、格式化、初稿生成和质量检查。</div>
+    </section>
+  </main>
+
+  <script>
+    const progress = document.getElementById('progress');
+    function updateProgress() {
+      const max = document.body.scrollHeight - window.innerHeight;
+      const pct = max <= 0 ? 0 : (window.scrollY / max) * 100;
+      progress.style.width = pct + '%';
+    }
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
+  </script>
+</body>
+</html>
