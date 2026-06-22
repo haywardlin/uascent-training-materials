@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI服务计量与权益中台 UX流程图</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --ink: #172033;
+      --muted: #667085;
+      --line: #d8e1ee;
+      --line-strong: #b5c5dc;
+      --blue: #0b66d8;
+      --blue-soft: #e8f1ff;
+      --green: #0f9f6e;
+      --green-soft: #e8f7f1;
+      --orange: #d98200;
+      --orange-soft: #fff3dd;
+      --red: #d92d20;
+      --red-soft: #fff0ee;
+      --purple: #6d5bd0;
+      --purple-soft: #f1efff;
+      --shadow: 0 10px 26px rgba(15, 35, 66, 0.08);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.45;
+      letter-spacing: 0;
+    }
+
+    .page {
+      max-width: 1440px;
+      min-width: 1180px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 18px;
+      margin-bottom: 16px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .intro {
+      padding: 24px 26px;
+    }
+
+    .eyebrow {
+      color: var(--blue);
+      font-weight: 760;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 860px;
+    }
+
+    .principles {
+      padding: 18px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .principle {
+      border: 1px solid var(--line);
+      background: #fbfcfe;
+      border-radius: 7px;
+      padding: 11px 12px;
+    }
+
+    .principle b {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 13px;
+    }
+
+    .principle span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .section {
+      margin-top: 16px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 52px;
+      padding: 0 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-title {
+      font-weight: 760;
+      font-size: 16px;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      font-size: 12px;
+      margin-left: 8px;
+      font-weight: 500;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 24px;
+      padding: 0 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .pill.blue { background: var(--blue-soft); color: var(--blue); }
+    .pill.green { background: var(--green-soft); color: #08764f; }
+    .pill.orange { background: var(--orange-soft); color: #985d00; }
+    .pill.red { background: var(--red-soft); color: #aa241a; }
+    .pill.purple { background: var(--purple-soft); color: var(--purple); }
+
+    .roles {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .role {
+      min-height: 132px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 14px;
+      background: #fbfcfe;
+    }
+
+    .role h3 {
+      margin: 0 0 8px;
+      font-size: 15px;
+    }
+
+    .role p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .flow {
+      padding: 18px;
+    }
+
+    .flow-row {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 26px;
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .flow-row::before {
+      content: "";
+      position: absolute;
+      left: 7%;
+      right: 7%;
+      top: 38px;
+      border-top: 2px solid var(--line-strong);
+      z-index: 0;
+    }
+
+    .flow-card {
+      position: relative;
+      z-index: 1;
+      min-height: 118px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fff;
+      padding: 13px;
+    }
+
+    .flow-card::after {
+      content: "";
+      position: absolute;
+      right: -18px;
+      top: 31px;
+      width: 10px;
+      height: 10px;
+      border-top: 2px solid var(--line-strong);
+      border-right: 2px solid var(--line-strong);
+      transform: rotate(45deg);
+      background: transparent;
+    }
+
+    .flow-card:last-child::after { display: none; }
+
+    .flow-index {
+      display: inline-grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 9px;
+    }
+
+    .flow-card h3 {
+      margin: 0 0 5px;
+      font-size: 14px;
+    }
+
+    .flow-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .lane-wrap {
+      padding: 18px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .lane {
+      display: grid;
+      grid-template-columns: 150px repeat(5, 1fr);
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .lane-name {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 7px;
+      color: #fff;
+      font-weight: 760;
+      background: #173762;
+      min-height: 76px;
+      text-align: center;
+      padding: 8px;
+    }
+
+    .lane-step {
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fbfcfe;
+      padding: 11px;
+      min-height: 76px;
+    }
+
+    .lane-step.empty {
+      border-style: dashed;
+      background: transparent;
+    }
+
+    .lane-step b {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    .lane-step span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .matrix {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      padding: 18px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    th {
+      background: #f0f4fa;
+      color: #31405a;
+      font-size: 12px;
+      text-align: left;
+      height: 38px;
+      padding: 0 12px;
+      border-bottom: 1px solid var(--line);
+      font-weight: 760;
+    }
+
+    td {
+      height: 48px;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: middle;
+      color: #26344d;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    .ia {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 14px;
+    }
+
+    .ia-col {
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      overflow: hidden;
+      background: #fbfcfe;
+    }
+
+    .ia-title {
+      height: 38px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      background: #173762;
+      color: #fff;
+      font-weight: 760;
+    }
+
+    .ia-list {
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .ia-item {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 9px 10px;
+      background: #fff;
+      font-size: 13px;
+    }
+
+    .note {
+      margin: 16px 18px 18px;
+      padding: 12px 14px;
+      border-left: 4px solid var(--blue);
+      border-radius: 6px;
+      background: #eef5ff;
+      color: #28415f;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="panel intro">
+        <div class="eyebrow">UX FLOW MAP</div>
+        <h1>AI服务计量与权益中台 UX流程图</h1>
+        <p class="lead">本页用于说明内部用户如何使用中台完成成本定位、权益配置、服务鉴权、B端结算和C端增值权益验证。重点是任务链路，而不是单个页面长什么样。</p>
+      </div>
+      <div class="panel principles">
+        <div class="principle">
+          <b>第一目标：成本可见</b>
+          <span>先看清客户、项目、设备维度下的 AI / 4G / 云服务成本。</span>
+        </div>
+        <div class="principle">
+          <b>第二目标：权益可控</b>
+          <span>高成本能力必须先鉴权，再调用，避免服务成本失控。</span>
+        </div>
+        <div class="principle">
+          <b>第三目标：客户可结算</b>
+          <span>把设备持续服务费、增值权益和项目服务费拆清楚。</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel section">
+      <div class="section-head">
+        <div class="section-title">用户角色与核心任务 <span class="section-sub">谁会用这个中台</span></div>
+        <span class="pill blue">内部后台</span>
+      </div>
+      <div class="roles">
+        <div class="role">
+          <h3>产品经理</h3>
+          <p>定义权益边界、套餐逻辑、灰度策略和服务降级规则。</p>
+        </div>
+        <div class="role">
+          <h3>运营</h3>
+          <p>查看付费转化、权益使用、到期续费、投诉和用户反馈。</p>
+        </div>
+        <div class="role">
+          <h3>商务</h3>
+          <p>查看客户项目成本，输出 B 端年度服务费和续费依据。</p>
+        </div>
+        <div class="role">
+          <h3>财务</h3>
+          <p>核对订单、退款、渠道账单、客户结算和收入归因。</p>
+        </div>
+        <div class="role">
+          <h3>客服</h3>
+          <p>查询用户权益、支付状态、服务失败原因，处理补发和退款。</p>
+        </div>
+        <div class="role">
+          <h3>研发 / 运维</h3>
+          <p>定位服务失败、接口异常、设备离线、Token 或流量异常消耗。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel section">
+      <div class="section-head">
+        <div class="section-title">核心任务流 01：成本失控定位 <span class="section-sub">从看见异常到形成结算动作</span></div>
+        <span class="pill red">P0 链路</span>
+      </div>
+      <div class="flow">
+        <div class="flow-row">
+          <div class="flow-card">
+            <span class="flow-index">1</span>
+            <h3>发现成本异常</h3>
+            <p>首页出现项目成本超阈值、单设备成本偏高或毛利被侵蚀提醒。</p>
+          </div>
+          <div class="flow-card">
+            <span class="flow-index">2</span>
+            <h3>定位客户项目</h3>
+            <p>下钻到客户、项目、批次、设备和用户维度。</p>
+          </div>
+          <div class="flow-card">
+            <span class="flow-index">3</span>
+            <h3>拆解成本来源</h3>
+            <p>查看 Token、ASR、TTS、4G、云存储和活跃设备贡献。</p>
+          </div>
+          <div class="flow-card">
+            <span class="flow-index">4</span>
+            <h3>判断权益边界</h3>
+            <p>判断当前服务是否属于基础服务、增值权益或定制服务。</p>
+          </div>
+          <div class="flow-card">
+            <span class="flow-index">5</span>
+            <h3>生成处理建议</h3>
+            <p>输出年度服务费、权益限额、套餐调整或服务降级建议。</p>
+          </div>
+          <div class="flow-card">
+            <span class="flow-index">6</span>
+            <h3>进入结算 / 配置</h3>
+            <p>商务结算、运营灰度、产品调整权益包，形成闭环。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel section">
+      <div class="section-head">
+        <div class="section-title">核心任务流 02：权益鉴权与服务调用 <span class="section-sub">设备 / App 发起调用时，系统如何判断能不能用</span></div>
+        <span class="pill blue">调用前置</span>
+      </div>
+      <div class="lane-wrap">
+        <div class="lane">
+          <div class="lane-name">设备 / App</div>
+          <div class="lane-step"><b>发起服务请求</b><span>AI对话、长期记忆、4G在线、云存储等。</span></div>
+          <div class="lane-step empty"></div>
+          <div class="lane-step empty"></div>
+          <div class="lane-step"><b>收到执行结果</b><span>正常执行、降级执行或提示购买/续费。</span></div>
+          <div class="lane-step"><b>同步体验结果</b><span>上报成功、失败、延迟和用户反馈。</span></div>
+        </div>
+        <div class="lane">
+          <div class="lane-name">权益中台</div>
+          <div class="lane-step empty"></div>
+          <div class="lane-step"><b>识别设备与用户</b><span>判断客户、项目、设备、用户和当前权益。</span></div>
+          <div class="lane-step"><b>判断是否可用</b><span>权益有效、额度充足、服务未过期、未被风控。</span></div>
+          <div class="lane-step"><b>返回鉴权结果</b><span>放行、限额、降级、拒绝、提示续费。</span></div>
+          <div class="lane-step empty"></div>
+        </div>
+        <div class="lane">
+          <div class="lane-name">AI / 云服务</div>
+          <div class="lane-step empty"></div>
+          <div class="lane-step empty"></div>
+          <div class="lane-step"><b>执行服务</b><span>ASR、LLM、TTS、记忆、知识库、云存储。</span></div>
+          <div class="lane-step"><b>返回结果</b><span>返回答案、音频、摘要、资源或错误原因。</span></div>
+          <div class="lane-step empty"></div>
+        </div>
+        <div class="lane">
+          <div class="lane-name">计量 / 账单</div>
+          <div class="lane-step empty"></div>
+          <div class="lane-step empty"></div>
+          <div class="lane-step"><b>记录资源消耗</b><span>Token、时长、次数、流量、存储、失败原因。</span></div>
+          <div class="lane-step empty"></div>
+          <div class="lane-step"><b>归因到客户项目</b><span>沉淀到成本、看板、结算和运营分析。</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel section">
+      <div class="section-head">
+        <div class="section-title">核心任务流 03：B端服务费结算 <span class="section-sub">把持续服务成本变成可沟通、可收费的依据</span></div>
+        <span class="pill green">商业闭环</span>
+      </div>
+      <div class="flow">
+        <div class="flow-row">
+          <div class="flow-card">
+            <span class="flow-index">1</span>
+            <h3>确定结算对象</h3>
+            <p>客户、项目、产品型号、设备批次、激活设备数。</p>
+          </div>
+          <div class="flow-card">
+            <span class="flow-index">2</span>
+            <h3>确认服务范围</h3>
+            <p>基础AI对话、云接入、设备管理、OTA和基础运维。</p>
+          </div>
+          <div class="flow-card">
+            <span class="flow-index">3</span>
+            <h3>统计用量成本</h3>
+            <p>按月生成 AI、4G、存储、活跃和失败率数据。</p>
+          </div>
+          <div class="flow-card">
+            <span class="flow-index">4</span>
+            <h3>生成账单草稿</h3>
+            <p>激活设备数 × 年度 AI 云服务费，支持人工调整。</p>
+          </div>
+          <div class="flow-card">
+            <span class="flow-index">5</span>
+            <h3>商务确认</h3>
+            <p>导出客户沟通材料，说明成本和服务边界。</p>
+          </div>
+          <div class="flow-card">
+            <span class="flow-index">6</span>
+            <h3>财务归档</h3>
+            <p>记录订单、回款、发票和下一周期续费提醒。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel section">
+      <div class="section-head">
+        <div class="section-title">异常与决策规则 <span class="section-sub">需要在 UX 上明确的提示和处理动作</span></div>
+        <span class="pill orange">避免扯皮</span>
+      </div>
+      <div class="matrix">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:22%;">异常场景</th>
+              <th style="width:28%;">系统判断</th>
+              <th style="width:28%;">用户/运营看到什么</th>
+              <th style="width:22%;">下一步动作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>权益到期</td>
+              <td>当前用户或设备无有效权益</td>
+              <td><span class="pill orange">提示续费/联系商务</span></td>
+              <td>续费、补发、降级到基础服务</td>
+            </tr>
+            <tr>
+              <td>额度耗尽</td>
+              <td>Token、流量或次数超出套餐限制</td>
+              <td><span class="pill red">停止高成本能力</span></td>
+              <td>购买额度包或进入B端结算</td>
+            </tr>
+            <tr>
+              <td>成本超阈值</td>
+              <td>单设备成本超过毛利或配置阈值</td>
+              <td><span class="pill red">项目风险提醒</span></td>
+              <td>调整权益、服务费或限额</td>
+            </tr>
+            <tr>
+              <td>支付成功但权益未到账</td>
+              <td>支付回调和权益发放状态不一致</td>
+              <td><span class="pill orange">待补发</span></td>
+              <td>客服补发并记录审计日志</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="width:25%;">关键页面</th>
+              <th style="width:32%;">用户任务</th>
+              <th style="width:23%;">必要操作</th>
+              <th style="width:20%;">权限</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>总览 Dashboard</td>
+              <td>查看整体成本、收入、风险和异常</td>
+              <td>筛选、下钻、导出</td>
+              <td>产品/运营/商务</td>
+            </tr>
+            <tr>
+              <td>客户项目详情</td>
+              <td>定位客户、项目、设备和成本归属</td>
+              <td>查看明细、生成账单</td>
+              <td>商务/财务</td>
+            </tr>
+            <tr>
+              <td>权益包配置</td>
+              <td>配置权益能力、额度、有效期和降级规则</td>
+              <td>新增、灰度、启停</td>
+              <td>产品/运营</td>
+            </tr>
+            <tr>
+              <td>订单与客服工具</td>
+              <td>处理支付、退款、补发、权益异常</td>
+              <td>查询、补发、退款</td>
+              <td>客服/财务</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel section">
+      <div class="section-head">
+        <div class="section-title">信息架构 <span class="section-sub">建议一期页面范围</span></div>
+        <span class="pill purple">MVP</span>
+      </div>
+      <div class="ia">
+        <div class="ia-col">
+          <div class="ia-title">经营总览</div>
+          <div class="ia-list">
+            <div class="ia-item">总览 Dashboard</div>
+            <div class="ia-item">成本与收入趋势</div>
+            <div class="ia-item">异常项目榜单</div>
+            <div class="ia-item">经营指标导出</div>
+          </div>
+        </div>
+        <div class="ia-col">
+          <div class="ia-title">客户项目</div>
+          <div class="ia-list">
+            <div class="ia-item">客户管理</div>
+            <div class="ia-item">项目管理</div>
+            <div class="ia-item">设备归属</div>
+            <div class="ia-item">设备用量明细</div>
+          </div>
+        </div>
+        <div class="ia-col">
+          <div class="ia-title">权益订阅</div>
+          <div class="ia-list">
+            <div class="ia-item">权益能力池</div>
+            <div class="ia-item">权益包配置</div>
+            <div class="ia-item">鉴权规则</div>
+            <div class="ia-item">订单 / 支付 / 退款</div>
+          </div>
+        </div>
+        <div class="ia-col">
+          <div class="ia-title">结算治理</div>
+          <div class="ia-list">
+            <div class="ia-item">B端服务费账单</div>
+            <div class="ia-item">渠道对账</div>
+            <div class="ia-item">告警中心</div>
+            <div class="ia-item">权限与审计</div>
+          </div>
+        </div>
+      </div>
+      <div class="note">一期 UX 原则：不追求完整会员商城，先让内部看清“谁在用、用了多少、谁来付费、超了怎么办”。这四件事跑通后，再扩展 C 端订阅增长工具。</div>
+    </section>
+  </main>
+</body>
+</html>
