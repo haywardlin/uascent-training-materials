@@ -1,0 +1,1023 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>安利AI玩偶 2.8寸屏 UX交互原型</title>
+  <style>
+    :root {
+      --bg: #f4f6fb;
+      --ink: #101828;
+      --muted: #667085;
+      --line: #d9e1ee;
+      --blue: #0b66d8;
+      --blue-soft: #e8f1ff;
+      --green: #0f9f6e;
+      --green-soft: #e8f7f1;
+      --purple: #6d5bd0;
+      --purple-soft: #f1efff;
+      --orange: #d98200;
+      --orange-soft: #fff4df;
+      --red: #d92d20;
+      --red-soft: #fff0ee;
+      --frame: #111827;
+      --panel: #ffffff;
+      --shadow: 0 18px 50px rgba(16, 24, 40, .12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      letter-spacing: 0;
+    }
+
+    .wrap {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 28px;
+      display: grid;
+      grid-template-columns: 430px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .title {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 26px;
+      line-height: 1.25;
+    }
+
+    .sub {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .stage {
+      display: grid;
+      justify-items: center;
+      gap: 14px;
+    }
+
+    .device {
+      width: 380px;
+      height: 520px;
+      padding: 18px;
+      background: var(--frame);
+      border-radius: 34px;
+      box-shadow: var(--shadow);
+    }
+
+    .screen {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+      border-radius: 24px;
+      background: #fbfcff;
+    }
+
+    .statusbar {
+      height: 38px;
+      padding: 10px 16px 0;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: start;
+      color: #475467;
+      font-size: 14px;
+    }
+
+    .statusbar .name {
+      color: var(--ink);
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .net {
+      justify-self: end;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .battery {
+      display: inline-block;
+      width: 22px;
+      height: 11px;
+      border-radius: 6px;
+      background: #12b76a;
+    }
+
+    .page {
+      display: none;
+      height: calc(100% - 38px);
+      padding: 10px 18px 16px;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .banner {
+      height: 42px;
+      border-radius: 18px;
+      background: var(--blue-soft);
+      border: 1px solid #d1e2ff;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 0 13px;
+      margin-bottom: 12px;
+      font-size: 15px;
+    }
+
+    .banner strong {
+      color: var(--blue);
+    }
+
+    .banner span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .face-wrap {
+      position: relative;
+      height: 150px;
+      display: grid;
+      place-items: center;
+      margin-top: 2px;
+    }
+
+    .petal {
+      position: absolute;
+      width: 64px;
+      height: 54px;
+      border-radius: 50%;
+      opacity: .95;
+    }
+
+    .p1 { background:#ffd8e8; transform: translate(-58px,-28px); }
+    .p2 { background:#fff0b8; transform: translate(0,-52px); }
+    .p3 { background:#d7f4e7; transform: translate(58px,-28px); }
+    .p4 { background:#ffd8e8; transform: translate(74px,22px); }
+    .p5 { background:#fff0b8; transform: translate(34px,62px); }
+    .p6 { background:#d7f2ff; transform: translate(-34px,62px); }
+    .p7 { background:#eadcff; transform: translate(-74px,22px); }
+
+    .face {
+      position: relative;
+      width: 134px;
+      height: 88px;
+      border-radius: 34px;
+      background: #141824;
+      display: grid;
+      place-items: center;
+      z-index: 2;
+    }
+
+    .face-inner {
+      position: relative;
+      width: 104px;
+      height: 64px;
+      border-radius: 28px;
+      background: #0f172a;
+    }
+
+    .eye {
+      position: absolute;
+      top: 19px;
+      width: 20px;
+      height: 27px;
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    .eye::after {
+      content: "";
+      position: absolute;
+      left: 6px;
+      top: 7px;
+      width: 9px;
+      height: 12px;
+      border-radius: 50%;
+      background: #1d4ed8;
+    }
+
+    .eye.left { left: 20px; }
+    .eye.right { right: 20px; }
+
+    .mouth {
+      position: absolute;
+      left: 31px;
+      top: 41px;
+      width: 44px;
+      height: 18px;
+      border-bottom: 4px solid #f472b6;
+      border-radius: 0 0 50px 50px;
+    }
+
+    .cheek {
+      position: absolute;
+      top: 43px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #f9a8d4;
+    }
+
+    .cheek.left { left: 6px; }
+    .cheek.right { right: 6px; }
+
+    .hello {
+      text-align: center;
+      margin-top: 4px;
+    }
+
+    .hello h2 {
+      margin: 0;
+      font-size: 26px;
+      font-weight: 700;
+    }
+
+    .hello p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .primary {
+      width: 100%;
+      height: 68px;
+      margin-top: 18px;
+      border: 0;
+      border-radius: 22px;
+      background: var(--blue);
+      color: #fff;
+      text-align: left;
+      padding: 0 22px;
+      cursor: pointer;
+      display: grid;
+      grid-template-columns: 1fr 58px;
+      align-items: center;
+    }
+
+    .primary b {
+      display: block;
+      font-size: 22px;
+      font-weight: 750;
+    }
+
+    .primary span {
+      display: block;
+      margin-top: 3px;
+      font-size: 13px;
+      color: #dbeafe;
+    }
+
+    .mic {
+      justify-self: end;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #fff;
+      position: relative;
+    }
+
+    .mic::before {
+      content: "";
+      position: absolute;
+      left: 20px;
+      top: 12px;
+      width: 13px;
+      height: 28px;
+      border-radius: 10px;
+      background: var(--blue);
+    }
+
+    .mic::after {
+      content: "";
+      position: absolute;
+      left: 25px;
+      top: 39px;
+      width: 2px;
+      height: 11px;
+      background: var(--blue);
+    }
+
+    .quick {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .quick button {
+      height: 64px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: #fff;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .quick small {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .quick .audio { background: var(--green-soft); border-color: #b7e4c7; color: #08764f; }
+    .quick .translate { background: var(--purple-soft); border-color: #d7ccff; color: var(--purple); }
+    .quick .camera { background: var(--orange-soft); border-color: #ffd9a3; color: #985d00; }
+
+    .list-head {
+      height: 40px;
+      border-radius: 16px;
+      padding: 0 14px;
+      background: var(--blue-soft);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .list-head b {
+      color: var(--blue);
+      font-size: 18px;
+    }
+
+    .list-head span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .audio-item {
+      height: 56px;
+      display: grid;
+      grid-template-columns: 30px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      padding: 0 10px;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+
+    .num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--blue-soft);
+      color: var(--blue);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+    }
+
+    .audio-title {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .time {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .tag {
+      padding: 3px 7px;
+      border-radius: 10px;
+      background: var(--green-soft);
+      color: #08764f;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .voice-tip {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 14px;
+      height: 28px;
+      border-radius: 14px;
+      background: var(--blue);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+    }
+
+    .player-card {
+      margin-top: 8px;
+      height: 126px;
+      border-radius: 22px;
+      border: 1px solid #d8e8ff;
+      background: #f7fbff;
+      display: grid;
+      justify-items: center;
+      align-content: center;
+      gap: 8px;
+    }
+
+    .player-card h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .wave {
+      height: 42px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .wave i {
+      display: block;
+      width: 6px;
+      border-radius: 4px;
+      background: var(--blue);
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    .wave i:nth-child(2n) { animation-delay: .2s; }
+    .wave i:nth-child(3n) { animation-delay: .35s; }
+
+    @keyframes pulse {
+      0%, 100% { transform: scaleY(.65); }
+      50% { transform: scaleY(1.1); }
+    }
+
+    .progress {
+      margin-top: 22px;
+    }
+
+    .bar {
+      height: 7px;
+      border-radius: 4px;
+      background: #e4e7ec;
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      width: 37%;
+      height: 100%;
+      background: var(--blue);
+    }
+
+    .progress-time {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .control-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .control-row button, .back, .ghost {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      height: 42px;
+      cursor: pointer;
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .offline-note {
+      margin-top: 12px;
+      height: 28px;
+      border-radius: 14px;
+      background: var(--orange-soft);
+      color: #985d00;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+    }
+
+    .listen {
+      height: 36px;
+      border-radius: 18px;
+      background: var(--green-soft);
+      color: #08764f;
+      display: grid;
+      place-items: center;
+      margin-bottom: 16px;
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .bubble {
+      border-radius: 16px;
+      padding: 12px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .bubble.user {
+      margin-left: 42px;
+      background: var(--blue-soft);
+      color: #0b3b7a;
+    }
+
+    .bubble.ai {
+      margin-right: 32px;
+      background: #fff;
+      border: 1px solid var(--line);
+      color: var(--ink);
+    }
+
+    .subtitle {
+      height: 38px;
+      border-radius: 16px;
+      background: var(--purple-soft);
+      color: var(--purple);
+      display: grid;
+      place-items: center;
+      margin-top: 16px;
+      font-weight: 700;
+    }
+
+    .camera-box {
+      height: 140px;
+      border: 1px solid #ffd9a3;
+      background: #fffaf0;
+      border-radius: 20px;
+      display: grid;
+      place-items: center;
+      margin-top: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lens {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 45% 40%, #fff 0 9%, #93c5fd 10% 20%, #1e3a8a 21% 55%, #0f172a 56% 100%);
+      box-shadow: 0 0 0 10px rgba(255,255,255,.7);
+    }
+
+    .scan {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      height: 2px;
+      background: var(--orange);
+      animation: scan 1.8s linear infinite;
+    }
+
+    @keyframes scan {
+      0% { top: 18px; }
+      100% { top: 120px; }
+    }
+
+    .result {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: #fff;
+      line-height: 1.45;
+      font-size: 14px;
+    }
+
+    .bottom-nav {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 38px;
+      display: grid;
+      place-items: center;
+    }
+
+    .handle {
+      width: 70px;
+      height: 5px;
+      border-radius: 3px;
+      background: #d0d5dd;
+    }
+
+    .meta {
+      width: 380px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .side {
+      display: grid;
+      gap: 16px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .panel h2 {
+      margin: 0 0 12px;
+      font-size: 18px;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+
+    .node {
+      min-height: 78px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fbfcff;
+      position: relative;
+    }
+
+    .node::after {
+      content: "";
+      position: absolute;
+      right: -8px;
+      top: 33px;
+      width: 10px;
+      height: 10px;
+      border-right: 2px solid #b5c5dc;
+      border-top: 2px solid #b5c5dc;
+      transform: rotate(45deg);
+      background: var(--bg);
+    }
+
+    .node:last-child::after { display: none; }
+
+    .node b {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--ink);
+      font-size: 13px;
+    }
+
+    .node span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .log {
+      display: grid;
+      gap: 8px;
+    }
+
+    .log-item {
+      border-left: 4px solid var(--blue);
+      background: #eef5ff;
+      padding: 9px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #28415f;
+    }
+
+    .scenario {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .scenario button {
+      height: 34px;
+      padding: 0 12px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: #fff;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .scenario button.active {
+      color: var(--blue);
+      border-color: #a7c8f6;
+      background: var(--blue-soft);
+    }
+
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .spec-table td {
+      border-bottom: 1px solid var(--line);
+      padding: 9px 4px;
+      vertical-align: top;
+    }
+
+    .spec-table td:first-child {
+      width: 130px;
+      color: var(--muted);
+    }
+
+    .spec-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    @media (max-width: 980px) {
+      .wrap {
+        grid-template-columns: 1fr;
+        justify-items: center;
+      }
+      .title {
+        display: block;
+        width: 100%;
+      }
+      .side {
+        width: 100%;
+      }
+      .flow {
+        grid-template-columns: 1fr;
+      }
+      .node::after {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="title">
+      <div>
+        <h1>安利 AI 玩偶 2.8寸屏 UX交互原型</h1>
+        <p class="sub">按 2.8 寸竖屏比例放大展示。点击屏幕按钮查看首页、小安词、本地播放、AI问答、翻译、拍照识别之间的交互。</p>
+      </div>
+    </header>
+
+    <section class="stage">
+      <div class="device">
+        <div class="screen">
+          <div class="statusbar">
+            <div>09:41</div>
+            <div class="name" id="screenTitle">小安</div>
+            <div class="net"><span id="netLabel">Wi-Fi</span><span class="battery" id="batteryIcon"></span></div>
+          </div>
+
+          <section id="home" class="page active">
+            <div class="banner">
+              <strong>今日</strong>
+              <b>首尔研讨会</b>
+              <span>小安词 3 条</span>
+            </div>
+            <div class="face-wrap">
+              <div class="petal p1"></div>
+              <div class="petal p2"></div>
+              <div class="petal p3"></div>
+              <div class="petal p4"></div>
+              <div class="petal p5"></div>
+              <div class="petal p6"></div>
+              <div class="petal p7"></div>
+              <div class="face">
+                <div class="face-inner">
+                  <span class="eye left"></span>
+                  <span class="eye right"></span>
+                  <span class="cheek left"></span>
+                  <span class="cheek right"></span>
+                  <span class="mouth"></span>
+                </div>
+              </div>
+            </div>
+            <div class="hello">
+              <h2>你好，伙伴</h2>
+              <p>说“你好小安”开始对话</p>
+            </div>
+            <button class="primary" onclick="go('dialog', '点击首页主入口：进入AI问答')">
+              <span><b>问小安</b><span>产品知识 / 行程 / 天气 / 闲聊</span></span>
+              <span class="mic"></span>
+            </button>
+            <div class="quick">
+              <button class="audio" onclick="go('audioList', '点击小安词：进入本地音频列表')">小安词<small>本地播放</small></button>
+              <button class="translate" onclick="go('translate', '点击翻译：进入中韩/中英翻译')">翻译<small>中韩 / 中英</small></button>
+              <button class="camera" onclick="go('camera', '点击拍照：进入拍照识别')">拍照<small>识别</small></button>
+            </div>
+          </section>
+
+          <section id="audioList" class="page">
+            <div class="list-head"><b>本地音频列表</b><span>12条</span></div>
+            <div class="audio-item" onclick="playAudio('今日欢迎词', '播放今日欢迎词：进入播放页')">
+              <div class="num">1</div>
+              <div><div class="audio-title">今日欢迎词</div><div class="time">00:38</div></div>
+              <div class="tag">已下载</div>
+            </div>
+            <div class="audio-item" onclick="playAudio('首尔研讨会议程', '播放首尔研讨会议程：进入播放页')">
+              <div class="num">2</div>
+              <div><div class="audio-title">首尔研讨会议程</div><div class="time">02:15</div></div>
+              <div class="tag">已下载</div>
+            </div>
+            <div class="audio-item" onclick="playAudio('营养品介绍', '播放营养品介绍：进入播放页')">
+              <div class="num">3</div>
+              <div><div class="audio-title">营养品介绍</div><div class="time">03:20</div></div>
+              <div class="tag">已下载</div>
+            </div>
+            <div class="audio-item" onclick="setLog('该音频未下载：提示联网同步后再播放')">
+              <div class="num">4</div>
+              <div><div class="audio-title">家居产品介绍</div><div class="time">02:48</div></div>
+              <div class="tag" style="background:var(--orange-soft);color:#985d00;">待更新</div>
+            </div>
+            <div class="voice-tip">语音：播放今日欢迎词</div>
+          </section>
+
+          <section id="player" class="page">
+            <div class="player-card">
+              <h2 id="audioTitle">首尔研讨会议程</h2>
+              <div style="color:var(--muted);font-size:14px;">第 2 / 12 条</div>
+              <div class="wave">
+                <i style="height:20px"></i><i style="height:34px"></i><i style="height:48px"></i><i style="height:32px"></i><i style="height:26px"></i><i style="height:44px"></i><i style="height:54px"></i><i style="height:36px"></i><i style="height:24px"></i>
+              </div>
+            </div>
+            <div class="progress">
+              <div class="bar"><span></span></div>
+              <div class="progress-time"><span>00:42</span><span>02:15</span></div>
+            </div>
+            <div class="control-row">
+              <button onclick="setLog('上一条：切换到上一段本地音频')">上一条</button>
+              <button onclick="togglePlay()" id="playBtn">暂停</button>
+              <button onclick="setLog('下一条：切换到下一段本地音频')">下一条</button>
+            </div>
+            <div class="control-row" style="grid-template-columns:1fr 1fr;margin-top:10px;">
+              <button onclick="go('audioList','返回音频列表')">列表</button>
+              <button onclick="go('home','停止播放并返回首页')">停止</button>
+            </div>
+            <div class="offline-note">离线可播放，联网后同步更新</div>
+          </section>
+
+          <section id="dialog" class="page">
+            <div class="listen">正在聆听...</div>
+            <div class="bubble user">请介绍一下首尔研讨会今天的安排</div>
+            <div class="bubble ai">今天上午是签到和开场介绍，下午是产品体验与交流环节。</div>
+            <div class="bubble user">纽崔莱有什么特色？</div>
+            <div class="bubble ai">我会优先根据安利知识库回答，并控制回复长度。</div>
+            <div class="control-row" style="grid-template-columns:1fr 1fr;margin-top:12px;">
+              <button onclick="setLog('语音打断：停止当前TTS并重新收音')">打断</button>
+              <button onclick="go('home','退出AI问答，返回首页')">返回</button>
+            </div>
+          </section>
+
+          <section id="translate" class="page">
+            <div class="listen" style="background:var(--purple-soft);color:var(--purple);">翻译模式</div>
+            <div class="bubble user">请问会议室在哪里？</div>
+            <div class="bubble ai">회의실은 어디에 있나요?</div>
+            <div class="subtitle">中 / 韩 字幕同步显示</div>
+            <div class="control-row" style="grid-template-columns:1fr 1fr;margin-top:20px;">
+              <button onclick="setLog('切换语言：中韩 / 中英')">切换语言</button>
+              <button onclick="go('home','退出翻译，返回首页')">返回</button>
+            </div>
+          </section>
+
+          <section id="camera" class="page">
+            <div class="listen" style="background:var(--orange-soft);color:#985d00;">拍照识别</div>
+            <div class="camera-box">
+              <div class="scan"></div>
+              <div class="lens"></div>
+            </div>
+            <div class="result">
+              <b>识别结果：</b> 当前画面可能是餐食或展台物品。可继续追问热量、产品信息或会务介绍。
+            </div>
+            <div class="control-row" style="grid-template-columns:1fr 1fr;margin-top:16px;">
+              <button onclick="setLog('重新拍照：刷新识别画面')">重拍</button>
+              <button onclick="go('home','退出拍照识别，返回首页')">返回</button>
+            </div>
+          </section>
+
+          <div class="bottom-nav"><span class="handle"></span></div>
+        </div>
+      </div>
+      <div class="meta">屏幕逻辑按 2.8 寸竖屏设计；当前为放大演示版，便于查看交互。</div>
+    </section>
+
+    <aside class="side">
+      <section class="panel">
+        <h2>核心 UX 流程</h2>
+        <div class="flow">
+          <div class="node"><b>首页</b><span>显示小安表情、今日研讨会信息和三个快捷入口。</span></div>
+          <div class="node"><b>选择任务</b><span>问小安、小安词、翻译、拍照识别。</span></div>
+          <div class="node"><b>执行功能</b><span>进入对话、列表、播放、字幕或识别结果。</span></div>
+          <div class="node"><b>异常恢复</b><span>离线播放、未下载提示、打断、返回首页。</span></div>
+          <div class="node"><b>回到首页</b><span>保持低层级，避免 2.8 寸屏路径过深。</span></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>模拟场景</h2>
+        <div class="scenario">
+          <button class="active" onclick="go('home','模拟：首页默认状态')">首页</button>
+          <button onclick="go('audioList','模拟：语音说“打开小安词”')">打开小安词</button>
+          <button onclick="playAudio('今日欢迎词','模拟：语音说“播放小安词”')">播放小安词</button>
+          <button onclick="go('dialog','模拟：语音唤醒后进入问答')">语音唤醒</button>
+          <button onclick="go('translate','模拟：进入翻译模式')">翻译</button>
+          <button onclick="go('camera','模拟：拍照识别')">拍照</button>
+          <button onclick="offlineMode()">离线状态</button>
+          <button onclick="lowBattery()">低电状态</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>交互日志</h2>
+        <div class="log" id="log">
+          <div class="log-item">默认进入首页。用户可点击“小安词”、说“播放小安词”，或直接点击“问小安”。</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>首页取舍</h2>
+        <table class="spec-table">
+          <tr><td>主入口</td><td>保留“问小安”，承接知识问答、行程、天气和闲聊。</td></tr>
+          <tr><td>内容入口</td><td>保留“小安词”，直接进入本地音频列表。</td></tr>
+          <tr><td>工具入口</td><td>保留“翻译”和“拍照”，对应客户要求的中韩/中英互译与拍照识别。</td></tr>
+          <tr><td>不放首页</td><td>设置、后台、绑定、OTA、隐私政策等不放设备首页，避免小屏过载。</td></tr>
+        </table>
+      </section>
+    </aside>
+  </main>
+
+  <script>
+    const pages = ['home', 'audioList', 'player', 'dialog', 'translate', 'camera'];
+    let playing = true;
+
+    function go(id, msg) {
+      pages.forEach(page => document.getElementById(page).classList.toggle('active', page === id));
+      const titleMap = {
+        home: '小安',
+        audioList: '小安词',
+        player: '播放中',
+        dialog: 'AI助手',
+        translate: '翻译',
+        camera: '拍照'
+      };
+      document.getElementById('screenTitle').textContent = titleMap[id] || '小安';
+      setLog(msg || `进入${titleMap[id]}`);
+      document.getElementById('netLabel').textContent = 'Wi-Fi';
+      document.getElementById('batteryIcon').style.background = '#12b76a';
+    }
+
+    function playAudio(title, msg) {
+      document.getElementById('audioTitle').textContent = title;
+      playing = true;
+      document.getElementById('playBtn').textContent = '暂停';
+      go('player', msg || `播放：${title}`);
+    }
+
+    function togglePlay() {
+      playing = !playing;
+      document.getElementById('playBtn').textContent = playing ? '暂停' : '继续';
+      setLog(playing ? '继续播放：恢复本地音频' : '暂停播放：停留在当前播放进度');
+    }
+
+    function offlineMode() {
+      document.getElementById('netLabel').textContent = '离线';
+      go('audioList', '离线状态：可播放已下载音频，在线问答/翻译不可用');
+      document.getElementById('netLabel').textContent = '离线';
+    }
+
+    function lowBattery() {
+      document.getElementById('batteryIcon').style.background = '#d92d20';
+      setLog('低电状态：保留本地播放和返回首页，限制高耗电功能');
+    }
+
+    function setLog(msg) {
+      const log = document.getElementById('log');
+      const item = document.createElement('div');
+      item.className = 'log-item';
+      item.textContent = msg;
+      log.prepend(item);
+      while (log.children.length > 5) log.removeChild(log.lastChild);
+    }
+  </script>
+</body>
+</html>
