@@ -6,21 +6,23 @@
   <title>安利AI玩偶 2.8寸屏 UX交互原型</title>
   <style>
     :root {
-      --bg: #f4f6fb;
-      --ink: #101828;
-      --muted: #667085;
-      --line: #d9e1ee;
-      --blue: #0b66d8;
-      --blue-soft: #e8f1ff;
-      --green: #0f9f6e;
-      --green-soft: #e8f7f1;
-      --purple: #6d5bd0;
-      --purple-soft: #f1efff;
-      --orange: #d98200;
-      --orange-soft: #fff4df;
+      --bg: #eef3f8;
+      --ink: #102033;
+      --muted: #66768a;
+      --line: #d7e2ee;
+      --blue: #005eb8;
+      --blue-soft: #e8f2ff;
+      --green: #008a65;
+      --green-soft: #e7f6f0;
+      --teal: #007a8a;
+      --teal-soft: #e3f5f7;
+      --purple: #3f6fb5;
+      --purple-soft: #edf4ff;
+      --orange: #b56b00;
+      --orange-soft: #fff3df;
       --red: #d92d20;
       --red-soft: #fff0ee;
-      --frame: #111827;
+      --frame: #0b2341;
       --panel: #ffffff;
       --shadow: 0 18px 50px rgba(16, 24, 40, .12);
     }
@@ -87,7 +89,7 @@
       overflow: hidden;
       position: relative;
       border-radius: 24px;
-      background: #fbfcff;
+      background: #ffffff;
     }
 
     .statusbar {
@@ -134,8 +136,8 @@
     .banner {
       height: 42px;
       border-radius: 18px;
-      background: var(--blue-soft);
-      border: 1px solid #d1e2ff;
+      background: linear-gradient(135deg, #e8f2ff, #f7fbff);
+      border: 1px solid #c9dcf4;
       display: grid;
       grid-template-columns: auto 1fr auto;
       align-items: center;
@@ -156,7 +158,7 @@
 
     .face-wrap {
       position: relative;
-      height: 150px;
+      height: 132px;
       display: grid;
       place-items: center;
       margin-top: 2px;
@@ -170,20 +172,20 @@
       opacity: .95;
     }
 
-    .p1 { background:#ffd8e8; transform: translate(-58px,-28px); }
-    .p2 { background:#fff0b8; transform: translate(0,-52px); }
-    .p3 { background:#d7f4e7; transform: translate(58px,-28px); }
-    .p4 { background:#ffd8e8; transform: translate(74px,22px); }
-    .p5 { background:#fff0b8; transform: translate(34px,62px); }
-    .p6 { background:#d7f2ff; transform: translate(-34px,62px); }
-    .p7 { background:#eadcff; transform: translate(-74px,22px); }
+    .p1 { background:#d7ebff; transform: translate(-58px,-28px); }
+    .p2 { background:#e6f4ea; transform: translate(0,-52px); }
+    .p3 { background:#dff6f7; transform: translate(58px,-28px); }
+    .p4 { background:#d7ebff; transform: translate(74px,22px); }
+    .p5 { background:#edf4ff; transform: translate(34px,62px); }
+    .p6 { background:#e6f4ea; transform: translate(-34px,62px); }
+    .p7 { background:#dff6f7; transform: translate(-74px,22px); }
 
     .face {
       position: relative;
       width: 134px;
       height: 88px;
       border-radius: 34px;
-      background: #141824;
+      background: #12304f;
       display: grid;
       place-items: center;
       z-index: 2;
@@ -194,7 +196,7 @@
       width: 104px;
       height: 64px;
       border-radius: 28px;
-      background: #0f172a;
+      background: #0d1f34;
     }
 
     .eye {
@@ -226,7 +228,7 @@
       top: 41px;
       width: 44px;
       height: 18px;
-      border-bottom: 4px solid #f472b6;
+      border-bottom: 4px solid #68d391;
       border-radius: 0 0 50px 50px;
     }
 
@@ -236,7 +238,7 @@
       width: 16px;
       height: 16px;
       border-radius: 50%;
-      background: #f9a8d4;
+      background: #9bd7ff;
     }
 
     .cheek.left { left: 6px; }
@@ -262,7 +264,7 @@
     .primary {
       width: 100%;
       height: 68px;
-      margin-top: 18px;
+      margin-top: 12px;
       border: 0;
       border-radius: 22px;
       background: var(--blue);
@@ -320,30 +322,31 @@
 
     .quick {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-top: 14px;
+      margin-top: 10px;
     }
 
     .quick button {
-      height: 64px;
-      border-radius: 18px;
+      height: 50px;
+      border-radius: 16px;
       border: 1px solid var(--line);
       background: #fff;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
     }
 
     .quick small {
       display: block;
-      margin-top: 5px;
+      margin-top: 3px;
       color: var(--muted);
       font-size: 11px;
       font-weight: 500;
     }
 
     .quick .audio { background: var(--green-soft); border-color: #b7e4c7; color: #08764f; }
+    .quick .scene { background: var(--teal-soft); border-color: #b7e7ec; color: var(--teal); }
     .quick .translate { background: var(--purple-soft); border-color: #d7ccff; color: var(--purple); }
     .quick .camera { background: var(--orange-soft); border-color: #ffd9a3; color: #985d00; }
 
@@ -530,6 +533,43 @@
       margin-bottom: 16px;
       font-size: 17px;
       font-weight: 700;
+    }
+
+    .scene-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .scene-card {
+      height: 62px;
+      border: 1px solid #b7e7ec;
+      border-radius: 16px;
+      background: #f3fbfc;
+      color: var(--teal);
+      cursor: pointer;
+      padding: 8px;
+      text-align: left;
+      font-weight: 750;
+    }
+
+    .scene-card small {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-weight: 500;
+      font-size: 11px;
+    }
+
+    .scope-note {
+      margin-top: 10px;
+      padding: 9px 10px;
+      border-radius: 14px;
+      background: var(--blue-soft);
+      color: #214a78;
+      font-size: 12px;
+      line-height: 1.35;
     }
 
     .bubble {
@@ -775,8 +815,8 @@
   <main class="wrap">
     <header class="title">
       <div>
-        <h1>安利 AI 玩偶 2.8寸屏 UX交互原型</h1>
-        <p class="sub">按 2.8 寸竖屏比例放大展示。点击屏幕按钮查看首页、小安词、本地播放、AI问答、翻译、拍照识别之间的交互。</p>
+        <h1>安利 AI 玩偶 2.8寸屏 UX交互原型 V1.1</h1>
+        <p class="sub">按 2.8 寸竖屏比例放大展示。购物、打车、点餐、问路统一归入“场景对话”，通过闲聊/翻译辅助完成，不承接下单、支付或叫车动作。</p>
       </div>
     </header>
 
@@ -818,11 +858,12 @@
               <p>说“你好小安”开始对话</p>
             </div>
             <button class="primary" onclick="go('dialog', '点击首页主入口：进入AI问答')">
-              <span><b>问小安</b><span>产品知识 / 行程 / 天气 / 闲聊</span></span>
+              <span><b>问小安</b><span>知识问答 / 行程 / 场景对话</span></span>
               <span class="mic"></span>
             </button>
             <div class="quick">
               <button class="audio" onclick="go('audioList', '点击小安词：进入本地音频列表')">小安词<small>本地播放</small></button>
+              <button class="scene" onclick="go('sceneChat', '点击场景：进入购物/打车/点餐/问路对话')">场景<small>购物 / 打车</small></button>
               <button class="translate" onclick="go('translate', '点击翻译：进入中韩/中英翻译')">翻译<small>中韩 / 中英</small></button>
               <button class="camera" onclick="go('camera', '点击拍照：进入拍照识别')">拍照<small>识别</small></button>
             </div>
@@ -889,6 +930,22 @@
             </div>
           </section>
 
+          <section id="sceneChat" class="page">
+            <div class="listen" style="background:var(--teal-soft);color:var(--teal);">场景对话</div>
+            <div class="bubble ai" id="sceneAnswer">我可以帮你组织韩语表达、说明注意事项和常用问法，但不直接下单、支付或叫车。</div>
+            <div class="scene-grid">
+              <button class="scene-card" onclick="sceneAsk('shopping')">购物沟通<small>询价 / 尺码 / 退换</small></button>
+              <button class="scene-card" onclick="sceneAsk('taxi')">打车表达<small>目的地 / 费用 / 上车点</small></button>
+              <button class="scene-card" onclick="sceneAsk('food')">点餐辅助<small>忌口 / 推荐 / 打包</small></button>
+              <button class="scene-card" onclick="sceneAsk('route')">问路说明<small>会议室 / 酒店 / 地铁</small></button>
+            </div>
+            <div class="scope-note">边界：本功能是闲聊对话和翻译辅助，不接入第三方交易、叫车或支付系统。</div>
+            <div class="control-row" style="grid-template-columns:1fr 1fr;margin-top:12px;">
+              <button onclick="go('translate','转到翻译模式')">转翻译</button>
+              <button onclick="go('home','退出场景对话，返回首页')">返回</button>
+            </div>
+          </section>
+
           <section id="translate" class="page">
             <div class="listen" style="background:var(--purple-soft);color:var(--purple);">翻译模式</div>
             <div class="bubble user">请问会议室在哪里？</div>
@@ -925,9 +982,9 @@
       <section class="panel">
         <h2>核心 UX 流程</h2>
         <div class="flow">
-          <div class="node"><b>首页</b><span>显示小安表情、今日研讨会信息和三个快捷入口。</span></div>
-          <div class="node"><b>选择任务</b><span>问小安、小安词、翻译、拍照识别。</span></div>
-          <div class="node"><b>执行功能</b><span>进入对话、列表、播放、字幕或识别结果。</span></div>
+          <div class="node"><b>首页</b><span>显示小安表情、今日研讨会信息和四个快捷入口。</span></div>
+          <div class="node"><b>选择任务</b><span>问小安、小安词、场景、翻译、拍照识别。</span></div>
+          <div class="node"><b>执行功能</b><span>进入对话、列表、播放、场景辅助、字幕或识别结果。</span></div>
           <div class="node"><b>异常恢复</b><span>离线播放、未下载提示、打断、返回首页。</span></div>
           <div class="node"><b>回到首页</b><span>保持低层级，避免 2.8 寸屏路径过深。</span></div>
         </div>
@@ -940,6 +997,9 @@
           <button onclick="go('audioList','模拟：语音说“打开小安词”')">打开小安词</button>
           <button onclick="playAudio('今日欢迎词','模拟：语音说“播放小安词”')">播放小安词</button>
           <button onclick="go('dialog','模拟：语音唤醒后进入问答')">语音唤醒</button>
+          <button onclick="go('sceneChat','模拟：打开购物/打车等场景对话')">场景对话</button>
+          <button onclick="go('sceneChat','模拟：用户问“我想打车去酒店怎么说”'); sceneAsk('taxi')">打车问法</button>
+          <button onclick="go('sceneChat','模拟：用户问“购物退换货怎么表达”'); sceneAsk('shopping')">购物沟通</button>
           <button onclick="go('translate','模拟：进入翻译模式')">翻译</button>
           <button onclick="go('camera','模拟：拍照识别')">拍照</button>
           <button onclick="offlineMode()">离线状态</button>
@@ -950,16 +1010,18 @@
       <section class="panel">
         <h2>交互日志</h2>
         <div class="log" id="log">
-          <div class="log-item">默认进入首页。用户可点击“小安词”、说“播放小安词”，或直接点击“问小安”。</div>
+          <div class="log-item">默认进入首页。购物、打车、点餐、问路统一通过“场景对话”进入，不做交易闭环。</div>
         </div>
       </section>
 
       <section class="panel">
         <h2>首页取舍</h2>
         <table class="spec-table">
-          <tr><td>主入口</td><td>保留“问小安”，承接知识问答、行程、天气和闲聊。</td></tr>
+          <tr><td>主入口</td><td>保留“问小安”，承接知识问答、行程、天气和一般闲聊。</td></tr>
           <tr><td>内容入口</td><td>保留“小安词”，直接进入本地音频列表。</td></tr>
+          <tr><td>场景入口</td><td>新增“场景”，承接购物、打车、点餐、问路等对话式辅助。</td></tr>
           <tr><td>工具入口</td><td>保留“翻译”和“拍照”，对应客户要求的中韩/中英互译与拍照识别。</td></tr>
+          <tr><td>能力边界</td><td>购物、打车等只做表达建议和对话辅助，不接入下单、支付、叫车。</td></tr>
           <tr><td>不放首页</td><td>设置、后台、绑定、OTA、隐私政策等不放设备首页，避免小屏过载。</td></tr>
         </table>
       </section>
@@ -967,7 +1029,7 @@
   </main>
 
   <script>
-    const pages = ['home', 'audioList', 'player', 'dialog', 'translate', 'camera'];
+    const pages = ['home', 'audioList', 'player', 'dialog', 'sceneChat', 'translate', 'camera'];
     let playing = true;
 
     function go(id, msg) {
@@ -977,6 +1039,7 @@
         audioList: '小安词',
         player: '播放中',
         dialog: 'AI助手',
+        sceneChat: '场景',
         translate: '翻译',
         camera: '拍照'
       };
@@ -997,6 +1060,18 @@
       playing = !playing;
       document.getElementById('playBtn').textContent = playing ? '暂停' : '继续';
       setLog(playing ? '继续播放：恢复本地音频' : '暂停播放：停留在当前播放进度');
+    }
+
+    function sceneAsk(type) {
+      const copy = {
+        shopping: '购物沟通：可以帮你整理“这个多少钱”“可以退换吗”“有没有更大尺码”等韩语表达，并提醒你确认价格和退换规则。',
+        taxi: '打车表达：可以帮你说清目的地、上车点、是否打表和大概费用，但不直接叫车或支付。',
+        food: '点餐辅助：可以帮你表达忌口、推荐菜、少辣、打包等需求，并可切到翻译模式让对方查看。',
+        route: '问路说明：可以帮你询问会议室、酒店、地铁或集合点位置；如需地图路径，建议使用手机地图。'
+      };
+      const text = copy[type] || copy.shopping;
+      document.getElementById('sceneAnswer').textContent = text;
+      setLog(text);
     }
 
     function offlineMode() {
